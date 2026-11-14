@@ -4,7 +4,7 @@
   "COSMOS_DH_TWEAKS.Settings.SpotlightRequestIndicator.Name": "Spotlight Request Canvas Indicator",
   "COSMOS_DH_TWEAKS.Settings.SpotlightRequestIndicator.Hint": "For GMs, display a small hand icon overlay on tokens that are requesting spotlight.",
   "COSMOS_DH_TWEAKS.Settings.MinimalCountdownUI.Name": "Minimal Countdown UI",
-  "COSMOS_DH_TWEAKS.Settings.MinimalCountdownUI.Hint": "When no countdowns are active, hides the UI completely for players and minimizes it to a '+' button for GMs.",
+  "COSMOS_DH_TWEAKS.Settings.MinimalCountdownUI.Hint": "For GMs, minimizes the countdown UI to a '+' button when there are no countdowns.",
   "COSMOS_DH_TWEAKS.Spotlight.request": "Request Spotlight",
   "COSMOS_DH_TWEAKS.Spotlight.cancel": "Cancel Spotlight Request",
   "COSMOS_DH_TWEAKS.Spotlight.grant": "Grant Spotlight",

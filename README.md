@@ -23,9 +23,7 @@ Displays a visual indicator on the canvas to make managing spotlight requests ea
 * **Canvas Synchronization**: Instantly appears or disappears as players toggle their spotlight requests.
 
 ### 3. Minimal Countdown UI (On by default)
-Reduces screen clutter by optimizing the Countdown Tracker widget:
-* **For Players**: Hides the countdown widget completely if there are no active/visible countdowns.
-* **For GMs**: Minimizes the countdown widget to a tiny square featuring a `+` icon when empty. Clicking the `+` icon opens the system's native Countdown Edit dialog.
+For GMs, minimizes the empty Countdown Tracker to a tiny square featuring a `+` icon. Clicking the `+` icon opens the system's native Countdown Edit dialog. (Hiding the empty tracker from players is built into the Daggerheart system.)
 
 ### 4. Fear Tracker Appearance
 Restyle the system's Fear Tracker without replacing it. The GM picks the look for everyone:

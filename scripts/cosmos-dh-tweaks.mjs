@@ -216,12 +216,8 @@ Hooks.once("init", () => {
                         const addBtn = this.element.querySelector(".cosmo-add-countdown");
                         if (addBtn) addBtn.remove();
                     }
-                } else {
-                    // For players: if there are no countdowns, hide the UI completely.
-                    if (!hasCountdowns) {
-                        this.element.hidden = true;
-                    }
                 }
+                // Players: the system already hides the widget when they can't see any countdowns.
             }
         }
         CONFIG.ui.countdowns = CosmoDhTweaksCountdowns;
