@@ -1,0 +1,294 @@
+/* Minimal Countdown UI styles */
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 4px;
+    align-self: flex-end;
+    overflow: hidden;
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown:hover {
+    width: 165px !important;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown .countdowns-header {
+    display: flex !important;
+    width: 100% !important;
+    height: 36px !important;
+    flex: 0 0 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: center;
+    justify-content: flex-start;
+    border: none !important;
+    background: transparent !important;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown .countdowns-header > *:not(.cosmo-add-countdown) {
+    display: none !important;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown .countdowns-container {
+    display: none !important;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown .cosmo-add-countdown {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 36px !important;
+    width: 36px;
+    font-size: 16px !important;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown:hover .cosmo-add-countdown {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    padding-left: 10px !important;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown .cosmo-add-countdown:hover {
+    color: #ffffff !important;
+    transform: scale(1.05);
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown .cosmo-add-label {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    transition: max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, margin-left 0.25s ease;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.daggerheart.dh-style.countdowns.cosmo-minimal-countdown:hover .cosmo-add-label {
+    max-width: 120px;
+    opacity: 1;
+    margin-left: 8px;
+}
+
+/* Token HUD Spotlight Button styling */
+.control-icon.cosmo-spotlight-hud-btn {
+    transition: color 0.2s ease, text-shadow 0.2s ease, background-color 0.2s ease;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.control-icon.cosmo-spotlight-hud-btn i {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    line-height: 1 !important;
+    text-align: center !important;
+}
+
+.control-icon.cosmo-spotlight-hud-btn:hover {
+    color: #ffffff;
+}
+
+.control-icon.cosmo-spotlight-hud-btn.active {
+    color: var(--golden, #c5a45e) !important;
+    text-shadow: 0 0 8px var(--golden, #c5a45e) !important;
+    border: 1px solid var(--golden, #c5a45e) !important;
+    box-shadow: 0 0 5px rgba(197, 164, 94, 0.5) !important;
+}
+
+/* Fear Tracker Window Customizations */
+#resources.cosmo-no-title-bar header.window-header {
+    display: none !important;
+}
+
+#resources.cosmo-no-title-bar {
+    min-height: 4rem !important;
+}
+
+#resources.cosmo-position-locked .window-resize-handle {
+    display: none !important;
+}
+
+/* Context menu styling */
+.cosmo-fear-context-menu {
+    background: rgba(24, 22, 46, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgb(153, 122, 79);
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    padding: 4px 0;
+    min-width: 150px;
+    font-family: inherit;
+}
+
+.cosmo-context-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cosmo-context-menu-item {
+    padding: 8px 12px;
+    color: #d3d3d3;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.cosmo-context-menu-item:hover {
+    background-color: rgba(197, 164, 94, 0.2);
+    color: #ffffff;
+}
+
+.cosmo-context-menu-item i {
+    width: 16px;
+    text-align: center;
+}
+
+button.cosmo-reset-fear-pos-btn,
+button.cosmo-reset-fear-scale-btn {
+    background: rgba(197, 164, 94, 0.1);
+    border: 1px solid rgb(153, 122, 79);
+    color: #d3d3d3;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+button.cosmo-reset-fear-pos-btn:hover,
+button.cosmo-reset-fear-scale-btn:hover {
+    background: rgba(197, 164, 94, 0.25);
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+/* Fear Tracker Scaling */
+#resources {
+    --cosmo-fear-scale: 1;
+}
+
+/* Scale the skull icons */
+#resources #resource-fear i {
+    width: calc(3rem * var(--cosmo-fear-scale, 1)) !important;
+    height: calc(3rem * var(--cosmo-fear-scale, 1)) !important;
+    font-size: calc(1.125rem * var(--cosmo-fear-scale, 1)) !important;
+}
+
+/* Scale hover state font-size for GMs */
+#resources.isGM #resource-fear i:hover {
+    font-size: calc(1.25rem * var(--cosmo-fear-scale, 1)) !important;
+}
+
+/* Scale the control buttons (+ and -) */
+#resources #resource-fear .controls {
+    width: calc(30px * var(--cosmo-fear-scale, 1)) !important;
+    height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
+    font-size: calc(1.25rem * var(--cosmo-fear-scale, 1)) !important;
+}
+
+#resources #resource-fear .controls:hover {
+    font-size: calc(1.5rem * var(--cosmo-fear-scale, 1)) !important;
+}
+
+/* Scale the resource bar */
+#resources #resource-fear .resource-bar {
+    font-size: calc(1.25rem * var(--cosmo-fear-scale, 1)) !important;
+    padding: calc(0.25rem * var(--cosmo-fear-scale, 1)) calc(0.5rem * var(--cosmo-fear-scale, 1)) !important;
+}
+
+/* Scale the window padding and flex gap */
+#resources .window-content {
+    padding: calc(0.5rem * var(--cosmo-fear-scale, 1)) !important;
+}
+
+#resources #resource-fear {
+    gap: calc(0.5rem * var(--cosmo-fear-scale, 1)) calc(0.25rem * var(--cosmo-fear-scale, 1)) !important;
+}
+
+/* Scale the window header */
+#resources header.window-header {
+    font-size: calc(14px * var(--cosmo-fear-scale, 1)) !important;
+    min-height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
+    height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
+}
+
+#resources header.window-header h1 {
+    font-size: calc(14px * var(--cosmo-fear-scale, 1)) !important;
+}
+
+#resources header.window-header button,
+#resources header.window-header a,
+#resources header.window-header i {
+    font-size: calc(14px * var(--cosmo-fear-scale, 1)) !important;
+}
+
+#resources header.window-header button,
+#resources header.window-header a {
+    width: calc(30px * var(--cosmo-fear-scale, 1)) !important;
+    height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
+    line-height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
+}
+
+/* Context menu scale controls styling */
+.cosmo-context-menu-header {
+    padding: 6px 12px 2px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #a49a85;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    border-top: 1px solid rgba(153, 122, 79, 0.3);
+    margin-top: 4px;
+}
+
+.cosmo-context-menu-scale-controls {
+    display: flex;
+    padding: 4px 12px 8px 12px;
+    gap: 4px;
+    justify-content: space-between;
+}
+
+.cosmo-context-menu-scale-controls button.scale-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(153, 122, 79, 0.4);
+    color: #d3d3d3;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.cosmo-context-menu-scale-controls button.scale-btn:hover {
+    background: rgba(197, 164, 94, 0.25);
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.cosmo-context-menu-scale-controls button.scale-btn.active {
+    background: rgba(197, 164, 94, 0.4);
+    border-color: rgb(197, 164, 94);
+    color: #ffffff;
+    font-weight: bold;
+}
+
