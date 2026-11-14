@@ -42,6 +42,7 @@ Switch to the sheet themes and token rings that ship with the Daggerheart Core R
 
 ### 6. Daggerheart Pause Icon (On by default)
 Replaces Foundry's spinning pause icon with the static Daggerheart emblem from the system, and stops the "Game Paused" banner from pulsing.
+* **No bundled artwork**: This module does not ship the Daggerheart logo or any other artwork. It only points the pause icon at the emblem the installed Daggerheart system already provides (`systems/daggerheart/assets/logos/DaggerheartLogo.webp`). Likewise, the sheet themes and token rings in feature 5 are the ones the `daggerheart-core` module provides.
 
 ## Configuration
 
