@@ -1,19 +1,80 @@
+const MODULE_ID = "cosmos-dh-tweaks";
+
+// Fear color gradients as [start, end]: tokens step from start to end across the row and the bar
+// fades from a darkened start to end, like the system default. "default" leaves the system's look untouched.
+const FEAR_THEMES = {
+    default: null,
+    crimson: ["#7f0a1a", "#e11d48"],
+    ember: ["#a3170f", "#f59e0b"],
+    gold: ["#8a4b08", "#facc15"],
+    emerald: ["#065f46", "#84cc16"],
+    frost: ["#1e3a8a", "#67e8f9"],
+    violet: ["#3b0a8f", "#e040fb"],
+    rose: ["#9d174d", "#fda4af"],
+    shadow: ["#18181b", "#71717a"]
+};
+
+// Fear token icons. "skull" is the system default.
+const FEAR_ICONS = {
+    skull: "fa-solid fa-skull",
+    skullCrossbones: "fa-solid fa-skull-crossbones",
+    ghost: "fa-solid fa-ghost",
+    eye: "fa-solid fa-eye",
+    spider: "fa-solid fa-spider",
+    dragon: "fa-solid fa-dragon",
+    fire: "fa-solid fa-fire",
+    bolt: "fa-solid fa-bolt",
+    moon: "fa-solid fa-moon",
+    heartCrack: "fa-solid fa-heart-crack",
+    biohazard: "fa-solid fa-biohazard",
+    radiation: "fa-solid fa-radiation",
+    hourglass: "fa-solid fa-hourglass-half",
+    crow: "fa-solid fa-crow",
+    mask: "fa-solid fa-masks-theater",
+    handFist: "fa-solid fa-hand-fist",
+    star: "fa-solid fa-star",
+    circle: "fa-solid fa-circle"
+};
+
+const FEAR_SHAPES = ["circle", "squircle", "square"];
+
+const FA_STYLE = /^(fa-(solid|regular|light|thin|duotone|brands|sharp)|fas|far|fal|fat|fad|fab)$/i;
+
+// Accept only Font Awesome class lists ("fa-ghost", "fa-solid fa-ghost", or just "ghost").
+// Anything else falls back to the system skull.
+function sanitizeFearIcon(value) {
+    let classes = String(value ?? "").trim().split(/\s+/).filter(Boolean);
+    if (classes.length === 1 && /^[a-z0-9-]+$/i.test(classes[0]) && !classes[0].startsWith("fa")) classes = [`fa-${classes[0]}`];
+    classes = classes.filter(c => /^fa[a-z0-9-]*$/i.test(c));
+    if (!classes.some(c => c.startsWith("fa-") && !FA_STYLE.test(c))) return FEAR_ICONS.skull;
+    if (!classes.some(c => FA_STYLE.test(c))) classes.unshift("fa-solid");
+    return classes.join(" ");
+}
+
+function fearSetting(key) {
+    return game.settings.get(MODULE_ID, key);
+}
+
+function rerenderFearTracker() {
+    if (ui.resources?.rendered) ui.resources.render();
+}
+
 Hooks.once("init", () => {
     // Register settings
-    game.settings.register("cosmos-dh-tweaks", "tokenHudSpotlight", {
+    game.settings.register(MODULE_ID, "tokenHudSpotlight", {
         name: "COSMOS_DH_TWEAKS.Settings.TokenHudSpotlight.Name",
         hint: "COSMOS_DH_TWEAKS.Settings.TokenHudSpotlight.Hint",
         scope: "world",
-        config: true,
+        config: false,
         type: Boolean,
         default: true
     });
 
-    game.settings.register("cosmos-dh-tweaks", "spotlightRequestIndicator", {
+    game.settings.register(MODULE_ID, "spotlightRequestIndicator", {
         name: "COSMOS_DH_TWEAKS.Settings.SpotlightRequestIndicator.Name",
         hint: "COSMOS_DH_TWEAKS.Settings.SpotlightRequestIndicator.Hint",
         scope: "world",
-        config: true,
+        config: false,
         type: Boolean,
         default: true,
         onChange: () => {
@@ -26,11 +87,11 @@ Hooks.once("init", () => {
         }
     });
 
-    game.settings.register("cosmos-dh-tweaks", "minimalCountdownUI", {
+    game.settings.register(MODULE_ID, "minimalCountdownUI", {
         name: "COSMOS_DH_TWEAKS.Settings.MinimalCountdownUI.Name",
         hint: "COSMOS_DH_TWEAKS.Settings.MinimalCountdownUI.Hint",
         scope: "world",
-        config: true,
+        config: false,
         type: Boolean,
         default: true,
         onChange: () => {
@@ -38,396 +99,80 @@ Hooks.once("init", () => {
         }
     });
 
-    game.settings.register("cosmos-dh-tweaks", "removeFearTitleBar", {
-        name: "COSMOS_DH_TWEAKS.Settings.RemoveFearTitleBar.Name",
-        hint: "COSMOS_DH_TWEAKS.Settings.RemoveFearTitleBar.Hint",
-        scope: "client",
-        config: true,
-        type: Boolean,
-        default: true,
-        onChange: () => {
-            if (ui.resources) {
-                ui.resources.updateTitleBarStatus();
-                ui.resources.adjustSizeToMaxFear();
-            }
-        }
+    const L = "COSMOS_DH_TWEAKS.Settings";
+
+    game.settings.register(MODULE_ID, "fearColorTheme", {
+        name: `${L}.FearColorTheme.Name`,
+        hint: `${L}.FearColorTheme.Hint`,
+        scope: "world",
+        config: false,
+        type: String,
+        choices: Object.fromEntries([...Object.keys(FEAR_THEMES), "custom"].map(k => [k, `${L}.FearColorTheme.Choices.${k}`])),
+        default: "default",
+        onChange: rerenderFearTracker
     });
 
-    game.settings.register("cosmos-dh-tweaks", "lockFearTrackerPosition", {
-        scope: "client",
+    game.settings.register(MODULE_ID, "fearCustomColor", {
+        name: `${L}.FearCustomColor.Name`,
+        hint: `${L}.FearCustomColor.Hint`,
+        scope: "world",
+        config: false,
+        type: new foundry.data.fields.ColorField({ nullable: false, initial: "#0947b3" }),
+        default: "#0947b3",
+        onChange: rerenderFearTracker
+    });
+
+    game.settings.register(MODULE_ID, "fearCustomColorEnd", {
+        name: `${L}.FearCustomColorEnd.Name`,
+        hint: `${L}.FearCustomColorEnd.Hint`,
+        scope: "world",
+        config: false,
+        type: new foundry.data.fields.ColorField({ nullable: false, initial: "#c701fc" }),
+        default: "#c701fc",
+        onChange: rerenderFearTracker
+    });
+
+    game.settings.register(MODULE_ID, "fearIcon", {
+        name: `${L}.FearIcon.Name`,
+        hint: `${L}.FearIcon.Hint`,
+        scope: "world",
+        config: false,
+        type: String,
+        choices: Object.fromEntries([...Object.keys(FEAR_ICONS), "custom"].map(k => [k, `${L}.FearIcon.Choices.${k}`])),
+        default: "skull",
+        onChange: rerenderFearTracker
+    });
+
+    game.settings.register(MODULE_ID, "fearCustomIcon", {
+        name: `${L}.FearCustomIcon.Name`,
+        hint: `${L}.FearCustomIcon.Hint`,
+        scope: "world",
+        config: false,
+        type: String,
+        default: "fa-solid fa-skull",
+        onChange: rerenderFearTracker
+    });
+
+    game.settings.register(MODULE_ID, "fearTokenShape", {
+        name: `${L}.FearTokenShape.Name`,
+        hint: `${L}.FearTokenShape.Hint`,
+        scope: "world",
+        config: false,
+        type: String,
+        choices: Object.fromEntries(FEAR_SHAPES.map(k => [k, `${L}.FearTokenShape.Choices.${k}`])),
+        default: "circle",
+        onChange: rerenderFearTracker
+    });
+
+    game.settings.register(MODULE_ID, "fearMaxGlow", {
+        name: `${L}.FearMaxGlow.Name`,
+        hint: `${L}.FearMaxGlow.Hint`,
+        scope: "world",
         config: false,
         type: Boolean,
-        default: false
+        default: false,
+        onChange: rerenderFearTracker
     });
-
-    game.settings.register("cosmos-dh-tweaks", "resetFearPosition", {
-        name: "COSMOS_DH_TWEAKS.Settings.ResetFearPosition.Name",
-        hint: "COSMOS_DH_TWEAKS.Settings.ResetFearPosition.Hint",
-        scope: "client",
-        config: true,
-        type: Boolean,
-        default: false
-    });
-
-    game.settings.register("cosmos-dh-tweaks", "fearTrackerScale", {
-        name: "COSMOS_DH_TWEAKS.Settings.FearTrackerScale.Name",
-        hint: "COSMOS_DH_TWEAKS.Settings.FearTrackerScale.Hint",
-        scope: "client",
-        config: true,
-        type: Number,
-        range: {
-            min: 0.5,
-            max: 1.5,
-            step: 0.05
-        },
-        default: 1.0,
-        onChange: () => {
-            if (ui.resources && ui.resources.rendered) {
-                ui.resources.updateScale();
-                ui.resources.adjustSizeToMaxFear();
-            }
-        }
-    });
-
-    game.settings.register("cosmos-dh-tweaks", "resetFearScale", {
-        name: "COSMOS_DH_TWEAKS.Settings.ResetFearScale.Name",
-        hint: "COSMOS_DH_TWEAKS.Settings.ResetFearScale.Hint",
-        scope: "client",
-        config: true,
-        type: Boolean,
-        default: false
-    });
-
-    // Override the FearTracker class in CONFIG
-    const OriginalFearTracker = CONFIG.ui.resources;
-    if (OriginalFearTracker) {
-        class CosmoDhTweaksFearTracker extends OriginalFearTracker {
-            async _onRender(context, options) {
-                await super._onRender(context, options);
-                
-                if (!this._eventsBound) {
-                    this._eventsBound = true;
-                    
-                    this.element.addEventListener('contextmenu', (e) => {
-                        this._showContextMenu(e);
-                    });
-
-                    this.element.addEventListener('mousedown', (e) => {
-                        const isLocked = game.settings.get("cosmos-dh-tweaks", "lockFearTrackerPosition");
-                        if (isLocked) {
-                            if (e.target.closest('header, .window-resize-handle')) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                return;
-                            }
-                        }
-
-                        const removeTitleBar = game.settings.get("cosmos-dh-tweaks", "removeFearTitleBar");
-                        if (removeTitleBar && !isLocked) {
-                            if (e.button !== 0) return;
-                            if (e.target.closest('i, .controls, button, input, a, .window-resize-handle')) return;
-
-                            e.preventDefault();
-                            this._startDrag(e);
-                        }
-                    }, { capture: true });
-                }
-
-                this.updateTitleBarStatus();
-                this.updateLockStatus();
-                this.updateScale();
-                this.adjustSizeToMaxFear();
-            }
-
-            updateScale() {
-                if (!this.element) return;
-                const scale = game.settings.get("cosmos-dh-tweaks", "fearTrackerScale") ?? 1.0;
-                this.element.style.setProperty('--cosmo-fear-scale', scale);
-            }
-
-            updateTitleBarStatus() {
-                if (!this.element) return;
-                const removeTitleBar = game.settings.get("cosmos-dh-tweaks", "removeFearTitleBar");
-                if (removeTitleBar) {
-                    this.element.classList.add("cosmo-no-title-bar");
-                } else {
-                    this.element.classList.remove("cosmo-no-title-bar");
-                }
-            }
-
-            updateLockStatus() {
-                if (!this.element) return;
-                const isLocked = game.settings.get("cosmos-dh-tweaks", "lockFearTrackerPosition");
-                if (isLocked) {
-                    this.element.classList.add("cosmo-position-locked");
-                } else {
-                    this.element.classList.remove("cosmo-position-locked");
-                }
-            }
-
-            getLayoutMeasurements() {
-                const content = this.element.querySelector('.window-content');
-                const grid = this.element.querySelector('#resource-fear');
-                const skulls = grid ? grid.querySelectorAll('i') : [];
-                
-                let skullW = 48;
-                let skullH = 48;
-                let gapX = 4;
-                let gapY = 8;
-                let padX = 16;
-                let padY = 16;
-                let headerH = 0;
-
-                if (content) {
-                    const style = window.getComputedStyle(content);
-                    const parsedPadX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-                    const parsedPadY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
-                    if (!isNaN(parsedPadX)) padX = parsedPadX;
-                    if (!isNaN(parsedPadY)) padY = parsedPadY;
-                }
-
-                const header = this.element.querySelector('header.window-header');
-                if (header && window.getComputedStyle(header).display !== 'none') {
-                    headerH = header.offsetHeight || 30;
-                }
-
-                if (skulls.length > 0) {
-                    const first = skulls[0];
-                    const firstRect = first.getBoundingClientRect();
-                    if (firstRect.width > 0) skullW = firstRect.width;
-                    if (firstRect.height > 0) skullH = firstRect.height;
-                    
-                    if (skulls.length > 1) {
-                        let second = null;
-                        for (let i = 1; i < skulls.length; i++) {
-                            const rect = skulls[i].getBoundingClientRect();
-                            if (Math.abs(rect.top - firstRect.top) < 2 && rect.width > 0) {
-                                second = rect;
-                                break;
-                            }
-                        }
-                        if (second) {
-                            gapX = second.left - firstRect.right;
-                        }
-                        
-                        let nextRow = null;
-                        for (let i = 1; i < skulls.length; i++) {
-                            const rect = skulls[i].getBoundingClientRect();
-                            if (rect.top - firstRect.bottom > 2 && rect.width > 0) {
-                                nextRow = rect;
-                                break;
-                            }
-                        }
-                        if (nextRow) {
-                            gapY = nextRow.top - firstRect.bottom;
-                        }
-                    }
-                }
-
-                return { skullW, skullH, gapX, gapY, padX, padY, headerH };
-            }
-
-            calculatePerfectSize(targetWidth, measurements) {
-                const scale = game.settings.get("cosmos-dh-tweaks", "fearTrackerScale") ?? 1.0;
-                
-                // Divide measurements by scale to work with unscaled base measurements
-                const skullW = measurements.skullW / scale;
-                const skullH = measurements.skullH / scale;
-                const gapX = measurements.gapX / scale;
-                const gapY = measurements.gapY / scale;
-                const padX = measurements.padX / scale;
-                const padY = measurements.padY / scale;
-                const headerH = measurements.headerH / scale;
-
-                const display = game.settings.get(CONFIG.DH.id, CONFIG.DH.SETTINGS.gameSettings.appearance).displayFear;
-                const maxFear = this.maxFear;
-
-                // Subtract the fixed border buffer from targetWidth before unscaling to get exact content size
-                const targetWUnscaled = targetWidth ? Math.max(0, (targetWidth - 8) / scale) : 222;
-
-                if (display === 'bar') {
-                    const barElement = this.element.querySelector('#resource-fear');
-                    const barH = barElement ? (barElement.getBoundingClientRect().height / scale) : 30;
-                    const perfectH = barH + padY + headerH;
-                    const minW = 200;
-                    const perfectW = Math.max(minW, targetWUnscaled);
-                    
-                    return {
-                        width: Math.ceil(perfectW * scale) + 8,
-                        height: Math.ceil(perfectH * scale) + 6
-                    };
-                } else {
-                    let cols = Math.round((targetWUnscaled - padX + gapX) / (skullW + gapX));
-                    cols = Math.max(1, Math.min(maxFear, cols));
-
-                    const perfectW = cols * skullW + (cols - 1) * gapX + padX;
-                    const rows = Math.ceil(maxFear / cols);
-                    const perfectH = rows * skullH + (rows - 1) * gapY + padY + headerH;
-
-                    return {
-                        width: Math.ceil(perfectW * scale) + 8,
-                        height: Math.ceil(perfectH * scale) + 6
-                    };
-                }
-            }
-
-            adjustSizeToMaxFear() {
-                if (!this.element) return;
-                
-                requestAnimationFrame(() => {
-                    if (!this.element) return;
-                    const measurements = this.getLayoutMeasurements();
-                    const pos = this.position;
-                    
-                    const perfect = this.calculatePerfectSize(pos.width, measurements);
-                    
-                    if (Math.abs(pos.width - perfect.width) > 1 || Math.abs(pos.height - perfect.height) > 1) {
-                        this.setPosition(perfect);
-                    }
-                });
-            }
-
-            setPosition(position = {}) {
-                if (!this.element) return super.setPosition(position);
-
-                const measurements = this.getLayoutMeasurements();
-                if (position.width !== undefined || position.height !== undefined) {
-                    const currentW = position.width !== undefined ? position.width : this.position.width;
-                    const perfect = this.calculatePerfectSize(currentW, measurements);
-                    
-                    position.width = perfect.width;
-                    position.height = perfect.height;
-                }
-
-                return super.setPosition(position);
-            }
-
-            _startDrag(e) {
-                let isDragging = true;
-                const startX = e.clientX;
-                const startY = e.clientY;
-                const pos = this.position;
-                const startLeft = pos.left;
-                const startTop = pos.top;
-
-                const onMouseMove = (event) => {
-                    if (!isDragging) return;
-                    const dx = event.clientX - startX;
-                    const dy = event.clientY - startY;
-
-                    this.setPosition({
-                        left: startLeft + dx,
-                        top: startTop + dy
-                    });
-                };
-
-                const onMouseUp = () => {
-                    isDragging = false;
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
-                };
-
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            }
-
-            _showContextMenu(e) {
-                e.preventDefault();
-                const existing = document.querySelector('.cosmo-fear-context-menu');
-                if (existing) existing.remove();
-
-                const isLocked = game.settings.get("cosmos-dh-tweaks", "lockFearTrackerPosition");
-                const currentScale = game.settings.get("cosmos-dh-tweaks", "fearTrackerScale") ?? 1.0;
-                const menu = document.createElement('div');
-                menu.className = 'cosmo-fear-context-menu';
-                
-                const lockText = isLocked 
-                    ? `<i class="fa-solid fa-lock-open"></i> ${game.i18n.localize("COSMOS_DH_TWEAKS.ContextMenu.UnlockPosition")}`
-                    : `<i class="fa-solid fa-lock"></i> ${game.i18n.localize("COSMOS_DH_TWEAKS.ContextMenu.LockPosition")}`;
-                    
-                menu.innerHTML = `
-                    <ul class="cosmo-context-menu-list">
-                        <li class="cosmo-context-menu-item lock-toggle" data-action="toggle-lock">
-                            ${lockText}
-                        </li>
-                        <li class="cosmo-context-menu-item reset-position" data-action="reset-position">
-                            <i class="fa-solid fa-arrows-rotate"></i> ${game.i18n.localize("COSMOS_DH_TWEAKS.ContextMenu.ResetPosition")}
-                        </li>
-                        <li class="cosmo-context-menu-item reset-scale" data-action="reset-scale">
-                            <i class="fa-solid fa-expand"></i> ${game.i18n.localize("COSMOS_DH_TWEAKS.ContextMenu.ResetScale")}
-                        </li>
-                        <li class="cosmo-context-menu-header">${game.i18n.localize("COSMOS_DH_TWEAKS.ContextMenu.ScaleHeader")}</li>
-                        <li class="cosmo-context-menu-scale-controls">
-                            <button class="scale-btn ${Math.abs(currentScale - 0.7) < 0.01 ? 'active' : ''}" data-scale="0.7">70%</button>
-                            <button class="scale-btn ${Math.abs(currentScale - 0.85) < 0.01 ? 'active' : ''}" data-scale="0.85">85%</button>
-                            <button class="scale-btn ${Math.abs(currentScale - 1.0) < 0.01 ? 'active' : ''}" data-scale="1.0">100%</button>
-                            <button class="scale-btn ${Math.abs(currentScale - 1.15) < 0.01 ? 'active' : ''}" data-scale="1.15">115%</button>
-                            <button class="scale-btn ${Math.abs(currentScale - 1.3) < 0.01 ? 'active' : ''}" data-scale="1.3">130%</button>
-                        </li>
-                    </ul>
-                `;
-
-                menu.style.position = 'fixed';
-                menu.style.left = `${e.clientX}px`;
-                menu.style.top = `${e.clientY}px`;
-                menu.style.zIndex = 100000;
-
-                document.body.appendChild(menu);
-
-                menu.querySelector('[data-action="toggle-lock"]').addEventListener('click', async (event) => {
-                    event.preventDefault();
-                    const currentLock = game.settings.get("cosmos-dh-tweaks", "lockFearTrackerPosition");
-                    await game.settings.set("cosmos-dh-tweaks", "lockFearTrackerPosition", !currentLock);
-                    this.updateLockStatus();
-                    menu.remove();
-                });
-
-                menu.querySelector('[data-action="reset-position"]').addEventListener('click', async (event) => {
-                    event.preventDefault();
-                    await game.user.unsetFlag(CONFIG.DH.id, 'app.resources.position');
-                    if (this.rendered) {
-                        const defaultPos = CONFIG.ui.resources.DEFAULT_OPTIONS.position;
-                        await this.setPosition(defaultPos);
-                    }
-                    ui.notifications.info(game.i18n.localize("COSMOS_DH_TWEAKS.Settings.ResetFearPosition.Success"));
-                    menu.remove();
-                });
-
-                menu.querySelector('[data-action="reset-scale"]').addEventListener('click', async (event) => {
-                    event.preventDefault();
-                    await game.settings.set("cosmos-dh-tweaks", "fearTrackerScale", 1.0);
-                    this.updateScale();
-                    this.adjustSizeToMaxFear();
-                    ui.notifications.info(game.i18n.localize("COSMOS_DH_TWEAKS.Settings.ResetFearScale.Success"));
-                    menu.remove();
-                });
-
-                menu.querySelectorAll('.scale-btn').forEach(btn => {
-                    btn.addEventListener('click', async (event) => {
-                        event.preventDefault();
-                        const newScale = parseFloat(btn.dataset.scale);
-                        await game.settings.set("cosmos-dh-tweaks", "fearTrackerScale", newScale);
-                        this.updateScale();
-                        this.adjustSizeToMaxFear();
-                        menu.remove();
-                    });
-                });
-
-                const closeMenu = (event) => {
-                    if (!menu.contains(event.target)) {
-                        menu.remove();
-                        document.removeEventListener('click', closeMenu);
-                        document.removeEventListener('contextmenu', closeMenu);
-                    }
-                };
-                setTimeout(() => {
-                    document.addEventListener('click', closeMenu);
-                    document.addEventListener('contextmenu', closeMenu);
-                }, 0);
-            }
-        }
-        CONFIG.ui.resources = CosmoDhTweaksFearTracker;
-    }
 
     // Override the Countdown class in CONFIG
     const OriginalCountdowns = CONFIG.ui.countdowns;
@@ -436,19 +181,16 @@ Hooks.once("init", () => {
             async _onRender(context, options) {
                 await super._onRender(context, options);
                 
-                if (!game.settings.get("cosmos-dh-tweaks", "minimalCountdownUI")) {
+                if (!game.settings.get(MODULE_ID, "minimalCountdownUI")) {
                     this.element.classList.remove("cosmo-minimal-countdown");
                     const addBtn = this.element.querySelector(".cosmo-add-countdown");
                     if (addBtn) addBtn.remove();
                     return;
                 }
 
-                // Check if there are active countdowns using public API
-                const countdownData = this._getCountdownData();
-                let count = 0;
-                for (const key of Object.keys(countdownData)) {
-                    count += Object.keys(countdownData[key]).length;
-                }
+                // Count the countdowns this user can see, the same way the system does (its helper is private).
+                const countdowns = game.settings.get(CONFIG.DH.id, CONFIG.DH.SETTINGS.gameSettings.Countdowns)?.countdowns ?? {};
+                const count = Object.values(countdowns).filter(countdown => countdown?.visible).length;
                 const hasCountdowns = count > 0;
 
                 if (game.user.isGM) {
@@ -487,7 +229,7 @@ Hooks.once("init", () => {
 });
 
 Hooks.on("renderTokenHUD", (tokenHUD, html, tokenData) => {
-    if (!game.settings.get("cosmos-dh-tweaks", "tokenHudSpotlight")) return;
+    if (!game.settings.get(MODULE_ID, "tokenHudSpotlight")) return;
 
     const token = tokenHUD.object;
     if (!token) return;
@@ -507,7 +249,7 @@ Hooks.on("renderTokenHUD", (tokenHUD, html, tokenData) => {
         const combatant = token.combatant;
         active = combatant 
             ? (combatant.system.spotlight?.requesting || false)
-            : (token.actor?.getFlag("cosmos-dh-tweaks", "requestingSpotlight") || false);
+            : (token.actor?.getFlag(MODULE_ID, "requestingSpotlight") || false);
     }
 
     const title = isGM
@@ -566,8 +308,8 @@ Hooks.on("renderTokenHUD", (tokenHUD, html, tokenData) => {
             }
 
             // Clear spotlight request indicator if GM grants/takes spotlight
-            if (token.actor?.getFlag("cosmos-dh-tweaks", "requestingSpotlight")) {
-                await token.actor.setFlag("cosmos-dh-tweaks", "requestingSpotlight", false);
+            if (token.actor?.getFlag(MODULE_ID, "requestingSpotlight")) {
+                await token.actor.setFlag(MODULE_ID, "requestingSpotlight", false);
             }
         } else {
             // Player requesting / cancelling spotlight
@@ -586,8 +328,8 @@ Hooks.on("renderTokenHUD", (tokenHUD, html, tokenData) => {
                 });
             } else {
                 // Out of combat request
-                const isRequesting = !!token.actor?.getFlag("cosmos-dh-tweaks", "requestingSpotlight");
-                await token.actor?.setFlag("cosmos-dh-tweaks", "requestingSpotlight", !isRequesting);
+                const isRequesting = !!token.actor?.getFlag(MODULE_ID, "requestingSpotlight");
+                await token.actor?.setFlag(MODULE_ID, "requestingSpotlight", !isRequesting);
             }
         }
         
@@ -607,7 +349,7 @@ Hooks.on("renderTokenHUD", (tokenHUD, html, tokenData) => {
 
 // Re-render Token HUD if open and its token is updated in combatant spotlight
 Hooks.on("updateCombatant", (combatant, change, options, userId) => {
-    if (!game.settings.get("cosmos-dh-tweaks", "tokenHudSpotlight")) return;
+    if (!game.settings.get(MODULE_ID, "tokenHudSpotlight")) return;
     if (canvas.tokens.hud.rendered && canvas.tokens.hud.object?.id === combatant.tokenId) {
         canvas.tokens.hud.render(true);
     }
@@ -615,7 +357,7 @@ Hooks.on("updateCombatant", (combatant, change, options, userId) => {
 
 // Re-render Token HUD if out-of-combat spotlight settings change
 Hooks.on("updateSetting", (setting, change, options, userId) => {
-    if (!game.settings.get("cosmos-dh-tweaks", "tokenHudSpotlight")) return;
+    if (!game.settings.get(MODULE_ID, "tokenHudSpotlight")) return;
     const key = setting.key || setting.id;
     if (key === "daggerheart.SpotlightTracker" || key === `${CONFIG.DH.id}.SpotlightTracker`) {
         if (canvas.tokens.hud.rendered) {
@@ -654,8 +396,8 @@ Hooks.on("updateToken", (tokenDoc, change, options, userId) => {
 Hooks.on("refreshToken", (token, options) => {
     if (!game.ready) return;
     if (!game.user?.isGM) return;
-    if (!game.settings.get("cosmos-dh-tweaks", "tokenHudSpotlight")) return;
-    if (!game.settings.get("cosmos-dh-tweaks", "spotlightRequestIndicator")) {
+    if (!game.settings.get(MODULE_ID, "tokenHudSpotlight")) return;
+    if (!game.settings.get(MODULE_ID, "spotlightRequestIndicator")) {
         if (token.cosmoSpotlightIndicator) {
             token.cosmoSpotlightIndicator.visible = false;
         }
@@ -664,7 +406,7 @@ Hooks.on("refreshToken", (token, options) => {
 
     const inCombat = !!token.combatant;
     const requestingInCombat = token.combatant?.system.spotlight?.requesting;
-    const requestingOutOfCombat = token.actor?.getFlag("cosmos-dh-tweaks", "requestingSpotlight");
+    const requestingOutOfCombat = token.actor?.getFlag(MODULE_ID, "requestingSpotlight");
     const isRequesting = inCombat ? requestingInCombat : requestingOutOfCombat;
 
     if (isRequesting) {
@@ -720,63 +462,387 @@ Hooks.on("destroyToken", (token) => {
         token.cosmoSpotlightIndicator = null;
     }
 });
+// Fear tracker appearance: recolor, reshape and swap the token icon on the system's own tracker.
+Hooks.on("renderFearTracker", (app, element) => {
+    const root = element ?? app.element;
+    if (!root) return;
 
-Hooks.on("renderSettingsConfig", (app, html, data) => {
-    const posInput = html.querySelector 
-        ? html.querySelector('[name="cosmos-dh-tweaks.resetFearPosition"]') 
-        : html.find('[name="cosmos-dh-tweaks.resetFearPosition"]')[0];
-    
-    if (posInput) {
-        const formGroup = posInput.closest('.form-group');
-        if (formGroup) {
-            const formFields = formGroup.querySelector('.form-fields');
-            if (formFields) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'cosmo-reset-fear-pos-btn';
-                button.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${game.i18n.localize("COSMOS_DH_TWEAKS.Settings.ResetFearPosition.ButtonText")}`;
-                button.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await game.user.unsetFlag(CONFIG.DH.id, 'app.resources.position');
-                    if (ui.resources && ui.resources.rendered) {
-                        const defaultPos = CONFIG.ui.resources.DEFAULT_OPTIONS.position;
-                        await ui.resources.setPosition(defaultPos);
-                    }
-                    ui.notifications.info(game.i18n.localize("COSMOS_DH_TWEAKS.Settings.ResetFearPosition.Success"));
-                });
-                
-                formFields.innerHTML = '';
-                formFields.appendChild(button);
+    const theme = fearSetting("fearColorTheme");
+    const colors = theme === "custom"
+        ? [fearSetting("fearCustomColor")?.toString(), fearSetting("fearCustomColorEnd")?.toString()]
+        : FEAR_THEMES[theme];
+    const tokens = root.querySelectorAll("#resource-fear .fear-tokens a.fear-token");
+    if (colors?.[0] && colors?.[1]) {
+        const [from, to] = colors;
+        root.classList.add("cosmo-fear-themed");
+        root.style.setProperty("--cosmo-fear-from", from);
+        root.style.setProperty("--cosmo-fear-to", to);
+        root.style.setProperty("--primary-color-fear", to);
+        const steps = Math.max(1, tokens.length - 1);
+        tokens.forEach((token, index) => {
+            const pct = Math.round((Number(token.dataset.index ?? index) / steps) * 100);
+            token.style.setProperty("--primary-color-fear", `color-mix(in oklab, ${from}, ${to} ${pct}%)`);
+        });
+    } else {
+        root.classList.remove("cosmo-fear-themed");
+        for (const v of ["--cosmo-fear-from", "--cosmo-fear-to", "--primary-color-fear"]) root.style.removeProperty(v);
+        tokens.forEach(token => token.style.removeProperty("--primary-color-fear"));
+    }
+
+    const shape = fearSetting("fearTokenShape");
+    for (const s of FEAR_SHAPES) root.classList.toggle(`cosmo-fear-shape-${s}`, s === shape && s !== "circle");
+
+    // Pulse when fear is at the world's configured maximum (homebrew max fear, not always 12).
+    const atMax = app.maxFear > 0 && app.currentFear >= app.maxFear;
+    root.classList.toggle("cosmo-fear-max-glow", fearSetting("fearMaxGlow") && atMax);
+
+    const iconKey = fearSetting("fearIcon");
+    const icon = iconKey === "custom" ? sanitizeFearIcon(fearSetting("fearCustomIcon")) : (FEAR_ICONS[iconKey] ?? FEAR_ICONS.skull);
+    for (const i of root.querySelectorAll("#resource-fear .fear-tokens i.fear-token")) {
+        i.className = `fear-token ${icon}`;
+    }
+});
+
+/* -------------------------------------------- */
+/*  Daggerheart Core Rulebook look              */
+/* -------------------------------------------- */
+// One-click switches for the actor sheet themes and token rings shipped by the daggerheart-core module.
+// Both are world settings set by the GM. The sheet theme is pushed into every user's own "core.sheetThemes"; the
+// ring mirrors "core.dynamicTokenRing" and follows changes made in Core settings.
+
+const DH_CORE_ID = "daggerheart-core";
+const MIXED = "";
+let syncingCoreLook = false;
+
+function dhCoreActive() {
+    return !!game.modules.get(DH_CORE_ID)?.active;
+}
+
+// Actor types whose registered sheets include the daggerheart-core themes, with that sheet's theme list.
+function dhCoreSheetThemes() {
+    const types = [];
+    let themes = {};
+    for (const [type, sheets] of Object.entries(CONFIG.Actor.sheetClasses ?? {})) {
+        const sheet = Object.values(sheets).find(s => s.themes && (DH_CORE_ID in s.themes));
+        if (!sheet) continue;
+        types.push(type);
+        themes = { ...themes, ...sheet.themes };
+    }
+    return { types, themes };
+}
+
+function dhCoreRings() {
+    const labels = CONFIG.Token?.ring?.configLabels ?? {};
+    return Object.fromEntries(Object.entries(labels).filter(([id]) => {
+        const sheet = CONFIG.Token.ring.getConfig?.(id)?.spritesheet ?? "";
+        return sheet.startsWith(`modules/${DH_CORE_ID}/`) || (!sheet && id.startsWith("daggerheart-"));
+    }));
+}
+
+function currentDhCoreRing() {
+    const ring = game.settings.get("core", "dynamicTokenRing");
+    return ring in dhCoreRings() ? ring : MIXED;
+}
+
+// Runs on every client: Foundry keeps default sheet themes per user (client setting), so each client copies the
+// GM's world-wide choice into its own defaults.
+async function applyDhCoreTheme(theme) {
+    if (theme === MIXED || !(theme in dhCoreSheetThemes().themes)) return;
+    const { types } = dhCoreSheetThemes();
+    const setting = foundry.utils.deepClone(game.settings.get("core", "sheetThemes") ?? {});
+    setting.defaults ??= {};
+    setting.defaults.Actor ??= {};
+    if (types.every(type => setting.defaults.Actor[type] === theme)) return;
+    for (const type of types) setting.defaults.Actor[type] = theme;
+    await game.settings.set("core", "sheetThemes", setting);
+
+    // Themes are baked in when a sheet is created, so reopen any open actor sheets.
+    for (const app of foundry.applications.instances.values()) {
+        if (app.document instanceof Actor && app.rendered) app.document._onSheetChange({ sheetOpen: true });
+    }
+}
+
+async function applyDhCoreRing(ring) {
+    if (syncingCoreLook || ring === MIXED || !game.user.isGM) return;
+    if (game.settings.get("core", "dynamicTokenRing") !== ring) await game.settings.set("core", "dynamicTokenRing", ring);
+}
+
+// Pull the ring choice back from Foundry's own setting without re-applying it.
+async function syncDhCoreRing() {
+    if (!dhCoreActive() || !game.user.isGM) return;
+    syncingCoreLook = true;
+    try {
+        const ring = currentDhCoreRing();
+        if (game.settings.get(MODULE_ID, "dhCoreTokenRing") !== ring) await game.settings.set(MODULE_ID, "dhCoreTokenRing", ring);
+    } finally {
+        syncingCoreLook = false;
+    }
+}
+
+Hooks.once("init", () => {
+    if (!dhCoreActive()) return;
+    const L = "COSMOS_DH_TWEAKS.Settings";
+
+    game.settings.register(MODULE_ID, "dhCoreSheetTheme", {
+        name: `${L}.DhCoreSheetTheme.Name`,
+        hint: `${L}.DhCoreSheetTheme.Hint`,
+        scope: "world",
+        config: false,
+        type: new foundry.data.fields.StringField({
+            required: true,
+            blank: true,
+            initial: MIXED,
+            choices: () => ({ [MIXED]: game.i18n.localize(`${L}.DhCoreSheetTheme.Unchanged`), ...dhCoreSheetThemes().themes })
+        }),
+        onChange: applyDhCoreTheme
+    });
+
+    game.settings.register(MODULE_ID, "dhCoreTokenRing", {
+        name: `${L}.DhCoreTokenRing.Name`,
+        hint: `${L}.DhCoreTokenRing.Hint`,
+        scope: "world",
+        config: false,
+        type: new foundry.data.fields.StringField({
+            required: true,
+            blank: true,
+            initial: MIXED,
+            choices: () => ({ [MIXED]: game.i18n.localize(`${L}.DhCoreTokenRing.Other`), ...dhCoreRings() })
+        }),
+        requiresReload: true,
+        onChange: applyDhCoreRing
+    });
+});
+
+Hooks.once("ready", () => {
+    if (!dhCoreActive()) return;
+    applyDhCoreTheme(game.settings.get(MODULE_ID, "dhCoreSheetTheme"));
+    syncDhCoreRing();
+});
+Hooks.on("updateSetting", setting => { if (setting.key === "core.dynamicTokenRing") syncDhCoreRing(); });
+
+/* -------------------------------------------- */
+/*  Daggerheart pause icon                      */
+/* -------------------------------------------- */
+// Swap Foundry's spinning pause icon for the Daggerheart emblem shipped with the system, without spin or pulse.
+
+Hooks.once("init", () => {
+    game.settings.register(MODULE_ID, "daggerheartPauseIcon", {
+        name: "COSMOS_DH_TWEAKS.Settings.DaggerheartPauseIcon.Name",
+        hint: "COSMOS_DH_TWEAKS.Settings.DaggerheartPauseIcon.Hint",
+        scope: "world",
+        config: false,
+        type: Boolean,
+        default: true,
+        onChange: () => ui.pause?.render()
+    });
+});
+
+Hooks.once("init", () => {
+    const BasePause = CONFIG.ui.pause;
+    if (!BasePause) return;
+    CONFIG.ui.pause = class CosmoDhTweaksGamePause extends BasePause {
+        async _prepareContext(options) {
+            const context = await super._prepareContext(options);
+            if (game.settings.get(MODULE_ID, "daggerheartPauseIcon")) {
+                context.icon = `systems/${game.system.id}/assets/logos/DaggerheartLogo.webp`;
+                context.spin = false;
             }
+            return context;
+        }
+
+        _replaceHTML(result, content, options) {
+            super._replaceHTML(result, content, options);
+            content.classList.toggle("cosmo-dh-pause", game.settings.get(MODULE_ID, "daggerheartPauseIcon"));
+        }
+    };
+});
+
+/* -------------------------------------------- */
+/*  Settings window                             */
+/* -------------------------------------------- */
+// All of the module's settings live in one tabbed window, opened from the module's entry in Configure Settings.
+
+// Tabs > sections > rows of setting keys; keys in the same row sit side by side. Settings that aren't registered
+// (e.g. daggerheart-core is inactive) or that the user may not change (world settings for players) are dropped,
+// along with any row, section or tab left empty.
+const SETTINGS_LAYOUT = [
+    {
+        id: "fear", icon: "fa-solid fa-skull", sections: [
+            { id: "color", rows: [["fearColorTheme"], ["fearCustomColor", "fearCustomColorEnd"]] },
+            { id: "icon", rows: [["fearIcon", "fearTokenShape"], ["fearCustomIcon"]] },
+            { id: "effects", rows: [["fearMaxGlow"]] }
+        ]
+    },
+    {
+        id: "spotlight", icon: "fa-solid fa-hand-sparkles", sections: [
+            { id: "hud", rows: [["tokenHudSpotlight"], ["spotlightRequestIndicator"]] }
+        ]
+    },
+    {
+        id: "themes", icon: "fa-solid fa-palette", sections: [
+            { id: "dhCore", rows: [["dhCoreSheetTheme"], ["dhCoreTokenRing"]] }
+        ]
+    },
+    {
+        id: "interface", icon: "fa-solid fa-display", sections: [
+            { id: "widgets", rows: [["minimalCountdownUI"], ["daggerheartPauseIcon"]] }
+        ]
+    }
+];
+
+// Fields that only apply when another select is set to "custom".
+const CUSTOM_DEPENDS_ON = {
+    fearCustomColor: "fearColorTheme",
+    fearCustomColorEnd: "fearColorTheme",
+    fearCustomIcon: "fearIcon"
+};
+
+function settingField(setting) {
+    const fields = foundry.data.fields;
+    let field;
+    if (setting.type instanceof fields.DataField) field = setting.type;
+    else if (setting.type === Boolean) field = new fields.BooleanField({ initial: setting.default ?? false });
+    else field = new fields.StringField({ required: true, choices: setting.choices });
+    field.name = `${setting.namespace}.${setting.key}`;
+    field.label ||= game.i18n.localize(setting.name ?? "");
+    field.hint ||= game.i18n.localize(setting.hint ?? "");
+    return field;
+}
+
+function canEditSetting(setting) {
+    return setting.scope !== CONST.SETTING_SCOPES.WORLD || game.user.can("SETTINGS_MODIFY");
+}
+
+const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
+
+class CosmoDhTweaksSettings extends HandlebarsApplicationMixin(ApplicationV2) {
+    static DEFAULT_OPTIONS = {
+        id: "cosmos-dh-tweaks-settings",
+        tag: "form",
+        classes: ["cosmo-dh-tweaks-settings"],
+        window: {
+            title: "COSMOS_DH_TWEAKS.SettingsWindow.Title",
+            icon: "fa-solid fa-sliders",
+            contentClasses: ["standard-form"]
+        },
+        position: { width: 560, height: "auto" },
+        form: {
+            handler: CosmoDhTweaksSettings.#onSubmit,
+            closeOnSubmit: true
+        },
+        actions: {
+            resetDefaults: CosmoDhTweaksSettings.#onResetDefaults
+        }
+    };
+
+    static PARTS = {
+        tabs: { template: "templates/generic/tab-navigation.hbs" },
+        body: { template: `modules/${MODULE_ID}/templates/settings.hbs`, scrollable: [""] },
+        footer: { template: "templates/generic/form-footer.hbs" }
+    };
+
+    #layout() {
+        const T = "COSMOS_DH_TWEAKS.SettingsWindow";
+        const entry = key => {
+            const setting = game.settings.settings.get(`${MODULE_ID}.${key}`);
+            if (!setting || !canEditSetting(setting)) return null;
+            const dependsOn = CUSTOM_DEPENDS_ON[key];
+            return {
+                key,
+                field: settingField(setting),
+                value: game.settings.get(MODULE_ID, key),
+                dependsOn,
+                hidden: !!dependsOn && game.settings.get(MODULE_ID, dependsOn) !== "custom"
+            };
+        };
+        return SETTINGS_LAYOUT.map(tab => ({
+            ...tab,
+            label: `${T}.Tabs.${tab.id}`,
+            sections: tab.sections.map(section => ({
+                legend: `${T}.Sections.${tab.id}.${section.id}`,
+                rows: section.rows
+                    .map(keys => keys.map(entry).filter(Boolean))
+                    .filter(entries => entries.length)
+                    .map(entries => ({ entries, multi: entries.length > 1 }))
+            })).filter(section => section.rows.length)
+        })).filter(tab => tab.sections.length);
+    }
+
+    _getTabsConfig(group) {
+        if (group !== "primary") return super._getTabsConfig(group);
+        const tabs = this.#layout().map(({ id, icon, label }) => ({ id, icon, label }));
+        return { tabs, initial: tabs[0]?.id ?? null };
+    }
+
+    async _prepareContext(options) {
+        const context = await super._prepareContext(options);
+        const tabs = this._prepareTabs("primary");
+        context.tabs = tabs;
+        context.panels = this.#layout().map(tab => ({ ...tab, ...tabs[tab.id] }));
+        context.buttons = [
+            { type: "button", action: "resetDefaults", icon: "fa-solid fa-arrow-rotate-left", label: "COSMOS_DH_TWEAKS.SettingsWindow.Reset" },
+            { type: "submit", icon: "fa-solid fa-floppy-disk", label: "COSMOS_DH_TWEAKS.SettingsWindow.Save" }
+        ];
+        return context;
+    }
+
+    async _onRender(context, options) {
+        await super._onRender(context, options);
+        for (const key of new Set(Object.values(CUSTOM_DEPENDS_ON))) {
+            const select = this.element.querySelector(`.cosmo-setting[data-key="${key}"] select`);
+            if (!select) continue;
+            const dependents = this.element.querySelectorAll(`.cosmo-setting[data-depends-on="${key}"]`);
+            const sync = () => {
+                for (const el of dependents) el.hidden = select.value !== "custom";
+                this.setPosition({ height: "auto" });
+            };
+            select.addEventListener("change", sync);
+            sync();
         }
     }
 
-    const scaleInput = html.querySelector 
-        ? html.querySelector('[name="cosmos-dh-tweaks.resetFearScale"]') 
-        : html.find('[name="cosmos-dh-tweaks.resetFearScale"]')[0];
-    
-    if (scaleInput) {
-        const formGroup = scaleInput.closest('.form-group');
-        if (formGroup) {
-            const formFields = formGroup.querySelector('.form-fields');
-            if (formFields) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'cosmo-reset-fear-scale-btn';
-                button.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> ${game.i18n.localize("COSMOS_DH_TWEAKS.Settings.ResetFearScale.ButtonText")}`;
-                button.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await game.settings.set("cosmos-dh-tweaks", "fearTrackerScale", 1.0);
-                    if (ui.resources && ui.resources.rendered) {
-                        ui.resources.updateScale();
-                        ui.resources.adjustSizeToMaxFear();
-                    }
-                    ui.notifications.info(game.i18n.localize("COSMOS_DH_TWEAKS.Settings.ResetFearScale.Success"));
-                });
-                
-                formFields.innerHTML = '';
-                formFields.appendChild(button);
-            }
+    static async #onResetDefaults() {
+        for (const [key, setting] of game.settings.settings.entries()) {
+            if (setting.namespace !== MODULE_ID) continue;
+            const input = this.form.elements[key];
+            if (!input) continue;
+            if (input.type === "checkbox") input.checked = !!setting.default;
+            else input.value = setting.type?.initial ?? setting.default ?? "";
+            input.dispatchEvent(new Event("change", { bubbles: true }));
         }
     }
+
+    static async #onSubmit(_event, _form, formData) {
+        let requiresClientReload = false;
+        let requiresWorldReload = false;
+        for (const [key, value] of Object.entries(formData.object)) {
+            const setting = game.settings.settings.get(key);
+            if (!setting || setting.namespace !== MODULE_ID || !canEditSetting(setting)) continue;
+            const prior = game.settings.get(MODULE_ID, setting.key);
+            if (foundry.utils.equals(prior?.toString?.() ?? prior, value?.toString?.() ?? value)) continue;
+            try {
+                await game.settings.set(MODULE_ID, setting.key, value);
+            } catch (error) {
+                ui.notifications.error(error.message ?? error);
+                continue;
+            }
+            const world = setting.scope === CONST.SETTING_SCOPES.WORLD;
+            requiresClientReload ||= !world && setting.requiresReload;
+            requiresWorldReload ||= world && setting.requiresReload;
+        }
+        if (requiresClientReload || requiresWorldReload) {
+            await foundry.applications.settings.SettingsConfig.reloadConfirm({ world: requiresWorldReload });
+        }
+    }
+}
+
+Hooks.once("init", () => {
+    game.settings.registerMenu(MODULE_ID, "settingsWindow", {
+        name: "COSMOS_DH_TWEAKS.SettingsWindow.MenuName",
+        label: "COSMOS_DH_TWEAKS.SettingsWindow.MenuLabel",
+        hint: "COSMOS_DH_TWEAKS.SettingsWindow.MenuHint",
+        icon: "fa-solid fa-sliders",
+        type: CosmoDhTweaksSettings,
+        restricted: true
+    });
 });

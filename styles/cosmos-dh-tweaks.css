@@ -104,191 +104,86 @@
     box-shadow: 0 0 5px rgba(197, 164, 94, 0.5) !important;
 }
 
-/* Fear Tracker Window Customizations */
-#resources.cosmo-no-title-bar header.window-header {
+/* Fear Tracker Appearance
+ * Themes set --primary-color-fear (per token, stepping through the gradient), which the system's own styles
+ * already use, plus --cosmo-fear-from / --cosmo-fear-to for the bar. */
+
+/* Theme gradients replace the system's per-token hue shift. */
+#resources.cosmo-fear-themed #resource-fear a.fear-token:not(.inactive) {
+    filter: none !important;
+}
+
+#resources.cosmo-fear-themed #resource-fear .progress-bar::-webkit-progress-value {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--cosmo-fear-from) 25%, black) 0%, var(--cosmo-fear-from) 35%, var(--cosmo-fear-to) 100%) !important;
+}
+
+#resources.cosmo-fear-themed #resource-fear .progress-bar::-moz-progress-bar {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--cosmo-fear-from) 25%, black) 0%, var(--cosmo-fear-from) 35%, var(--cosmo-fear-to) 100%) !important;
+}
+
+/* Token shapes (circle is the system default) */
+#resources.cosmo-fear-shape-squircle #resource-fear .fear-token {
+    border-radius: 30% !important;
+}
+
+#resources.cosmo-fear-shape-square #resource-fear .fear-token {
+    border-radius: 0 !important;
+}
+
+/* Glow pulse at maximum fear */
+@keyframes cosmo-fear-pulse {
+    0%, 100% {
+        box-shadow: 0 0 2px 0 var(--primary-color-fear);
+    }
+    50% {
+        box-shadow: 0 0 12px 4px var(--primary-color-fear);
+    }
+}
+
+#resources.cosmo-fear-max-glow #resource-fear a.fear-token,
+#resources.cosmo-fear-max-glow #resource-fear .progress-bar {
+    animation: cosmo-fear-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #resources.cosmo-fear-max-glow #resource-fear a.fear-token,
+    #resources.cosmo-fear-max-glow #resource-fear .progress-bar {
+        animation: none;
+        box-shadow: 0 0 10px 3px var(--primary-color-fear);
+    }
+}
+
+/* Daggerheart pause icon: static emblem, no pulsing banner or spinning icon */
+#pause.cosmo-dh-pause,
+#pause.cosmo-dh-pause.paused,
+#pause.cosmo-dh-pause > * {
+    animation: none !important;
+    transform: none !important;
+}
+
+#pause.cosmo-dh-pause img {
+    width: auto !important;
+    height: 110px !important;
+    object-fit: contain;
+}
+
+/* Settings window */
+.cosmo-dh-tweaks-settings .cosmo-setting[hidden] {
     display: none !important;
 }
 
-#resources.cosmo-no-title-bar {
-    min-height: 4rem !important;
-}
-
-#resources.cosmo-position-locked .window-resize-handle {
-    display: none !important;
-}
-
-/* Context menu styling */
-.cosmo-fear-context-menu {
-    background: rgba(24, 22, 46, 0.95);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgb(153, 122, 79);
-    border-radius: 6px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    padding: 4px 0;
-    min-width: 150px;
-    font-family: inherit;
-}
-
-.cosmo-context-menu-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.cosmo-context-menu-item {
-    padding: 8px 12px;
-    color: #d3d3d3;
-    font-size: 13px;
-    cursor: pointer;
+.cosmo-dh-tweaks-settings .cosmo-setting-row.multi {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.2s, color 0.2s;
+    gap: 1rem;
 }
 
-.cosmo-context-menu-item:hover {
-    background-color: rgba(197, 164, 94, 0.2);
-    color: #ffffff;
+.cosmo-dh-tweaks-settings .cosmo-setting-row.multi > .cosmo-setting {
+    flex: 1 1 0;
+    min-width: 0;
 }
 
-.cosmo-context-menu-item i {
-    width: 16px;
-    text-align: center;
-}
-
-button.cosmo-reset-fear-pos-btn,
-button.cosmo-reset-fear-scale-btn {
-    background: rgba(197, 164, 94, 0.1);
-    border: 1px solid rgb(153, 122, 79);
-    color: #d3d3d3;
-    padding: 4px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-family: inherit;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-}
-
-button.cosmo-reset-fear-pos-btn:hover,
-button.cosmo-reset-fear-scale-btn:hover {
-    background: rgba(197, 164, 94, 0.25);
-    border-color: #ffffff;
-    color: #ffffff;
-}
-
-/* Fear Tracker Scaling */
-#resources {
-    --cosmo-fear-scale: 1;
-}
-
-/* Scale the skull icons */
-#resources #resource-fear i {
-    width: calc(3rem * var(--cosmo-fear-scale, 1)) !important;
-    height: calc(3rem * var(--cosmo-fear-scale, 1)) !important;
-    font-size: calc(1.125rem * var(--cosmo-fear-scale, 1)) !important;
-}
-
-/* Scale hover state font-size for GMs */
-#resources.isGM #resource-fear i:hover {
-    font-size: calc(1.25rem * var(--cosmo-fear-scale, 1)) !important;
-}
-
-/* Scale the control buttons (+ and -) */
-#resources #resource-fear .controls {
-    width: calc(30px * var(--cosmo-fear-scale, 1)) !important;
-    height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
-    font-size: calc(1.25rem * var(--cosmo-fear-scale, 1)) !important;
-}
-
-#resources #resource-fear .controls:hover {
-    font-size: calc(1.5rem * var(--cosmo-fear-scale, 1)) !important;
-}
-
-/* Scale the resource bar */
-#resources #resource-fear .resource-bar {
-    font-size: calc(1.25rem * var(--cosmo-fear-scale, 1)) !important;
-    padding: calc(0.25rem * var(--cosmo-fear-scale, 1)) calc(0.5rem * var(--cosmo-fear-scale, 1)) !important;
-}
-
-/* Scale the window padding and flex gap */
-#resources .window-content {
-    padding: calc(0.5rem * var(--cosmo-fear-scale, 1)) !important;
-}
-
-#resources #resource-fear {
-    gap: calc(0.5rem * var(--cosmo-fear-scale, 1)) calc(0.25rem * var(--cosmo-fear-scale, 1)) !important;
-}
-
-/* Scale the window header */
-#resources header.window-header {
-    font-size: calc(14px * var(--cosmo-fear-scale, 1)) !important;
-    min-height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
-    height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
-}
-
-#resources header.window-header h1 {
-    font-size: calc(14px * var(--cosmo-fear-scale, 1)) !important;
-}
-
-#resources header.window-header button,
-#resources header.window-header a,
-#resources header.window-header i {
-    font-size: calc(14px * var(--cosmo-fear-scale, 1)) !important;
-}
-
-#resources header.window-header button,
-#resources header.window-header a {
-    width: calc(30px * var(--cosmo-fear-scale, 1)) !important;
-    height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
-    line-height: calc(30px * var(--cosmo-fear-scale, 1)) !important;
-}
-
-/* Context menu scale controls styling */
-.cosmo-context-menu-header {
-    padding: 6px 12px 2px 12px;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #a49a85;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    border-top: 1px solid rgba(153, 122, 79, 0.3);
-    margin-top: 4px;
-}
-
-.cosmo-context-menu-scale-controls {
+.cosmo-dh-tweaks-settings fieldset {
     display: flex;
-    padding: 4px 12px 8px 12px;
-    gap: 4px;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.5rem;
 }
-
-.cosmo-context-menu-scale-controls button.scale-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(153, 122, 79, 0.4);
-    color: #d3d3d3;
-    padding: 2px 6px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 11px;
-    font-family: inherit;
-    transition: all 0.2s ease;
-    flex: 1;
-    text-align: center;
-}
-
-.cosmo-context-menu-scale-controls button.scale-btn:hover {
-    background: rgba(197, 164, 94, 0.25);
-    border-color: #ffffff;
-    color: #ffffff;
-}
-
-.cosmo-context-menu-scale-controls button.scale-btn.active {
-    background: rgba(197, 164, 94, 0.4);
-    border-color: rgb(197, 164, 94);
-    color: #ffffff;
-    font-weight: bold;
-}
-

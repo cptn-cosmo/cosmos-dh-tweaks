@@ -36,7 +36,7 @@ jobs:
           # The released manifest always points at this release's zip.
           jq --arg url "https://github.com/$REPO/releases/download/$TAG/cosmos-dh-tweaks.zip" \
             '.download = $url' module.json > module.tmp && mv module.tmp module.json
-          zip -r cosmos-dh-tweaks.zip module.json LICENSE README.md lang scripts styles
+          zip -r cosmos-dh-tweaks.zip module.json LICENSE README.md lang scripts styles templates
 
       - name: Create the GitHub release
         env:

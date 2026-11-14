@@ -1,0 +1,22 @@
+<div class="cosmo-settings-body">
+    {{#each panels as |panel|}}
+    <section class="tab {{panel.cssClass}}" data-tab="{{panel.id}}" data-group="primary">
+        {{#each panel.sections as |section|}}
+        <fieldset>
+            <legend>{{localize section.legend}}</legend>
+            {{#each section.rows as |row|}}
+            <div class="cosmo-setting-row{{#if row.multi}} multi{{/if}}">
+                {{#each row.entries as |entry|}}
+                <div class="cosmo-setting" data-key="{{entry.key}}"
+                     {{#if entry.dependsOn}}data-depends-on="{{entry.dependsOn}}"{{/if}}
+                     {{#if entry.hidden}}hidden{{/if}}>
+                    {{formGroup entry.field value=entry.value localize=true stacked=row.multi}}
+                </div>
+                {{/each}}
+            </div>
+            {{/each}}
+        </fieldset>
+        {{/each}}
+    </section>
+    {{/each}}
+</div>
