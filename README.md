@@ -53,4 +53,4 @@ Bump `version` in `module.json`, commit, then push an annotated tag matching it:
 git tag -a v1.2.0 -m "v1.2.0" -m "- change one" -m "- change two" && git push origin v1.2.0
 ```
 
-The release workflow builds the zip, attaches it and the manifest to a GitHub release (tag message body becomes the notes), and registers the version with the Foundry package admin if the `FOUNDRY_PACKAGE_RELEASE_TOKEN` secret is set.
+The release workflow builds the zip, attaches it and the manifest to a GitHub release (tag message body becomes the notes), and registers the version with the Foundry package admin if the `FOUNDRYVTT_PACKAGE_RELEASE_TOKEN` secret is set.

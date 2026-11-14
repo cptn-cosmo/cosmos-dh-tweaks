@@ -2,7 +2,7 @@
 #   git tag -a v1.2.3 -m "Title" -m "- change one" -m "- change two" && git push origin v1.2.3
 # The tag's message (after the first line) becomes the release notes. module.json's version must match
 # the tag. The zip and the version-specific manifest are attached to a GitHub release, and the version is
-# registered with the Foundry package admin (needs the FOUNDRY_PACKAGE_RELEASE_TOKEN repository secret).
+# registered with the Foundry package admin (needs the FOUNDRYVTT_PACKAGE_RELEASE_TOKEN repository secret).
 name: Release
 
 on:
@@ -50,10 +50,10 @@ jobs:
 
       - name: Publish to the Foundry package admin
         env:
-          FOUNDRY_TOKEN: ${{ secrets.FOUNDRY_PACKAGE_RELEASE_TOKEN }}
+          FOUNDRY_TOKEN: ${{ secrets.FOUNDRYVTT_PACKAGE_RELEASE_TOKEN }}
         run: |
           if [ -z "$FOUNDRY_TOKEN" ]; then
-            echo "::warning::FOUNDRY_PACKAGE_RELEASE_TOKEN is not set; skipping the Foundry release"
+            echo "::warning::FOUNDRYVTT_PACKAGE_RELEASE_TOKEN is not set; skipping the Foundry release"
             exit 0
           fi
           body=$(jq -n \
