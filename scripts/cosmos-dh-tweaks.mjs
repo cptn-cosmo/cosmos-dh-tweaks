@@ -748,12 +748,18 @@ function statblockContext(sheet, context) {
 
     const featureForm = feature => feature.system?.featureForm
         ? t(`DAGGERHEART.CONFIG.FeatureForm.${feature.system.featureForm}`) : "";
+    // Action buttons, as the system sheet shows them (grouped actions are reached through their parent).
     const decorate = feature => ({
         item: feature,
         form: featureForm(feature),
         inactive: !!feature.system?.inactive,
-        usable: !!feature.usable && !feature.system?.inactive && context.editable,
-        usesActions: [...(feature.system?.actions ?? [])].filter(action => action.uses?.max)
+        actions: context.editable
+            ? [...(feature.system?.actions ?? [])].filter(action => !action.isGrouped).map(action => ({
+                uuid: action.uuid,
+                name: action.name,
+                uses: action.uses?.max ? `${action.remainingUses ?? action.uses.max - (action.uses.value ?? 0)}/${action.uses.max}` : null
+            }))
+            : []
     });
     sb.features = (context.features ?? []).map(decorate);
     sb.evolutionFeatures = (context.evolutionFeatures ?? []).map(decorate);

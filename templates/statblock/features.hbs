@@ -4,17 +4,20 @@
     <span class="cosmo-sb-feature-head{{#if item.hasDescription}} toggle{{/if}}" {{#if item.hasDescription}}data-action="toggleExtended"{{/if}}>
         <strong class="cosmo-sb-feature-name">{{item.name}}{{#if form}} - {{form}}{{/if}}:</strong>
     </span>
-    {{#if usable}}
-        <a class="cosmo-sb-use" data-action="useItem" data-tooltip="DAGGERHEART.GENERAL.use"><i class="fa-solid fa-dice-d20"></i></a>
-    {{/if}}
-    {{#each usesActions as |action|}}
-        <span class="item-button cosmo-sb-uses"><button type="button" class="action-uses-button" data-action="increaseActionUses"
-            data-item-uuid="{{action.uuid}}" data-tooltip-text="{{action.name}}">{{action.remainingUses}}/{{action.uses.max}}</button></span>
-    {{/each}}
     {{#if item.system.resource}}
         <span class="cosmo-sb-resource">{{> "systems/daggerheart/templates/sheets/global/partials/item-resource.hbs" item=item}}</span>
     {{/if}}
     <div class="inventory-item-content extensible"><div class="inventory-description"></div></div>
+    {{#if actions.length}}
+        <div class="cosmo-sb-actions">
+            {{#each actions as |action|}}
+                <span class="item-button cosmo-sb-action">
+                    <button type="button" data-action="useItem" data-item-uuid="{{action.uuid}}" {{#if ../inactive}}disabled{{/if}}>{{action.name}}</button>
+                    {{#if action.uses}}<button type="button" class="action-uses-button" data-action="increaseActionUses" data-item-uuid="{{action.uuid}}" {{#if ../inactive}}disabled{{/if}}>{{action.uses}}</button>{{/if}}
+                </span>
+            {{/each}}
+        </div>
+    {{/if}}
 </li>
 {{/inline}}
 <section class="cosmo-sb-features">

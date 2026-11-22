@@ -192,22 +192,21 @@
 /*  Statblock sheets                            */
 /* -------------------------------------------- */
 /* Adversary and environment sheets that look like the rulebook statblocks: the same fonts, sizes and colors as the
-   system's statblock embeds. Always the light book look; a slim tab bar sits above the statblock and the HP/Stress
+   system's statblock embeds, light or dark following the sheet theme (Configure Sheet) or the interface theme. A slim tab bar sits above the statblock and the HP/Stress
    trackers below it, so the statblock itself stays as printed. */
 
 .application.sheet.daggerheart.actor.dh-style.cosmo-statblock-sheet {
-    --cosmo-sb-bg: #f4f0e7;
-    --cosmo-sb-stats-bg: #ffffff;
-    --cosmo-sb-text: #000000;
-    --cosmo-sb-subtle: #6b6252;
-    --cosmo-sb-border: #ddd0b9;
-    --cosmo-sb-hover: #ebe4d5;
-    --cosmo-sb-mark: #8c1d18;
-    --cosmo-sb-mark-stress: #2f4d8a;
+    /* light-dark() pairs: the system embed's light and dark statblock colors */
+    --cosmo-sb-bg: light-dark(#f4f0e7, #0f0f14);
+    --cosmo-sb-stats-bg: light-dark(#ffffff, #000000);
+    --cosmo-sb-text: light-dark(#000000, #efe6d8);
+    --cosmo-sb-subtle: light-dark(#6b6252, #a59d8f);
+    --cosmo-sb-border: light-dark(#ddd0b9, #efe6d880);
+    --cosmo-sb-hover: light-dark(#ebe4d5, #1d1c25);
+    --cosmo-sb-mark: light-dark(#8c1d18, #e0655c);
+    --cosmo-sb-mark-stress: light-dark(#2f4d8a, #8fa6e8);
     --cosmo-sb-font: "Signika", ui-sans-serif, sans-serif;
     --cosmo-sb-side: 0.625rem;
-
-    color-scheme: light;
     background: var(--cosmo-sb-bg);
     background-image: none;
     color: var(--cosmo-sb-text);
@@ -471,40 +470,47 @@
             text-decoration: underline dotted;
         }
 
-        /* Use button: only on hover, so the statblock reads clean */
-        .cosmo-sb-use {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 0 2px;
-            background: var(--cosmo-sb-bg);
-            font-size: 0.85em;
-            color: var(--cosmo-sb-subtle);
-            text-shadow: none;
-            opacity: 0;
-            transition: opacity 0.15s ease;
-            &:hover { color: var(--cosmo-sb-text); }
+        /* Action buttons: text only, on their own line under the feature */
+        .cosmo-sb-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin: 3px 0 1px;
         }
 
-        &:hover .cosmo-sb-use,
-        .cosmo-sb-use:focus-visible { opacity: 1; }
-
-        .cosmo-sb-uses {
-            display: inline-block;
+        .cosmo-sb-action {
+            display: inline-flex;
 
             button {
+                flex: 0 0 auto;
                 width: auto;
-                height: 16px;
+                height: 20px;
                 min-height: 0;
-                margin: 0 0.15em;
-                padding: 0 5px;
+                margin: 0;
+                padding: 0 7px;
                 border: 1px solid var(--cosmo-sb-border);
-                border-radius: 8px;
+                border-radius: 4px;
                 background: var(--cosmo-sb-stats-bg);
                 color: var(--cosmo-sb-text);
-                font: 600 11px/14px var(--cosmo-sb-font);
+                font: 600 12px/18px var(--cosmo-sb-font);
+                font-style: normal;
                 box-shadow: none;
+                text-shadow: none;
+
+                &:hover:not(:disabled) { background: var(--cosmo-sb-hover); }
+                &:disabled { opacity: 0.5; cursor: default; }
             }
+
+            /* Uses counter attached to its action */
+            button + button.action-uses-button {
+                margin-left: -1px;
+                padding: 0 6px;
+                border-radius: 0 4px 4px 0;
+                color: var(--cosmo-sb-subtle);
+                font-variant-numeric: tabular-nums;
+            }
+
+            button:has(+ button.action-uses-button) { border-radius: 4px 0 0 4px; }
         }
 
         .cosmo-sb-resource {
