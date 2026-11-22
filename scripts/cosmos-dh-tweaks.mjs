@@ -708,16 +708,16 @@ function statblockContext(sheet, context) {
     const actor = sheet.document;
     const system = actor.system;
     const t = key => game.i18n.localize(key);
-    const sb = { isAdversary: actor.type === "adversary" };
+    const sb = { isAdversary: actor.type === "adversary", attribution: system.attributionLabel || "" };
 
     if (sb.isAdversary) {
         const type = t(CONFIG.DH.ACTOR.allAdversaryTypes()[system.type]?.label ?? "");
         sb.tierLine = game.i18n.format("DAGGERHEART.GENERAL.Tiers.typed", { tier: system.tier, type });
         if (system.type === "horde") sb.horde = `(${system.typeData?.hordeHP ?? "?"}/${t("DAGGERHEART.GENERAL.HitPoints.short")})`;
         sb.subTypes = Object.keys(system.subTypes ?? {}).map(key => CONFIG.DH.ACTOR.adversarySubTypes?.[key]?.label).filter(Boolean).map(t);
-        sb.hp = pips(system.resources?.hitPoints);
-        sb.stress = pips(system.resources?.stress);
         sb.thresholds = `${system.damageThresholds?.major ?? "–"}/${system.damageThresholds?.severe ?? "–"}`;
+        sb.hpMax = system.resources?.hitPoints?.max ?? "–";
+        sb.stressMax = system.resources?.stress?.max ?? "–";
         const attack = system.attack;
         if (attack) {
             sb.attack = {
@@ -764,6 +764,9 @@ function statblockContext(sheet, context) {
 // Shared overrides for both statblock sheets.
 function StatblockMixin(Base, { tabs, width, height }) {
     return class extends Base {
+        // The source goes in the tier line, as in the book, instead of the window header.
+        hasHeaderAttribution = false;
+
         static DEFAULT_OPTIONS = {
             classes: ["cosmo-statblock-sheet"],
             position: { width, height },
@@ -801,6 +804,9 @@ function StatblockMixin(Base, { tabs, width, height }) {
                 await this._prepareHeaderContext(context, options);
                 await this._prepareFeaturesContext(context, options);
                 statblockContext(this, context);
+            } else if (partId === "trackers") {
+                const resources = this.document.system.resources ?? {};
+                context.sb = { hp: pips(resources.hitPoints), stress: pips(resources.stress) };
             }
             return context;
         }
@@ -815,7 +821,7 @@ Hooks.once("setup", () => {
     const label = `${SB}.SheetLabel`;
 
     class CosmoStatblockAdversarySheet extends StatblockMixin(sheets.Adversary, {
-        width: 560, height: 720,
+        width: 480, height: 720,
         tabs: [{ id: "statblock", label: `${SB}.Tab` }, { id: "effects" }, { id: "notes" }]
     }) {
         static PARTS = {
@@ -823,12 +829,13 @@ Hooks.once("setup", () => {
             nav: { template: `${T}/nav.hbs` },
             statblock: { template: `${T}/adversary.hbs`, scrollable: [""] },
             effects: sheets.Adversary.PARTS.effects,
-            notes: sheets.Adversary.PARTS.notes
+            notes: sheets.Adversary.PARTS.notes,
+            trackers: { template: `${T}/trackers.hbs` }
         };
     }
 
     class CosmoStatblockEnvironmentSheet extends StatblockMixin(sheets.Environment, {
-        width: 520, height: 680,
+        width: 480, height: 640,
         tabs: [{ id: "statblock", label: `${SB}.Tab` }, { id: "potentialAdversaries" }, { id: "notes" }]
     }) {
         static PARTS = {

@@ -1,9 +1,8 @@
 <header class="cosmo-sb-header">
-    <img class="cosmo-sb-portrait profile" src="{{document.img}}" alt="{{document.name}}" data-action="editImage" data-edit="img">
     <h1 class="input actor-name cosmo-sb-name" contenteditable="plaintext-only" data-property="name"
         placeholder="{{localize "DAGGERHEART.GENERAL.actorName"}}" autocomplete="off" spellcheck="false">{{source.name}}</h1>
-    <div class="cosmo-sb-tier">{{sb.tierLine}}{{#if sb.horde}} {{sb.horde}}{{/if}}{{#each sb.subTypes}}, {{this}}{{/each}}</div>
-    {{#if description}}<div class="cosmo-sb-description">{{{description}}}</div>{{/if}}
+    <div class="cosmo-sb-tier">{{sb.tierLine}}{{#if sb.horde}} {{sb.horde}}{{/if}}{{#each sb.subTypes}}, {{this}}{{/each}}{{#if sb.attribution}} <span class="cosmo-sb-attribution">({{sb.attribution}})</span>{{/if}}</div>
+    {{#if description}}<section class="cosmo-sb-description">{{{description}}}</section>{{/if}}
     {{#if sb.isAdversary}}
         {{#if source.system.motivesAndTactics}}
             <div class="cosmo-sb-motives"><strong>{{localize "DAGGERHEART.ACTORS.Adversary.FIELDS.motivesAndTactics.label"}}:</strong> {{{source.system.motivesAndTactics}}}</div>

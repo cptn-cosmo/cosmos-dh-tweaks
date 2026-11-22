@@ -43,11 +43,11 @@ Replaces Foundry's spinning pause icon with the static Daggerheart emblem from t
 * **No bundled artwork**: This module does not ship the Daggerheart logo or any other artwork. It only points the pause icon at the emblem the installed Daggerheart system already provides (`systems/daggerheart/assets/logos/DaggerheartLogo.webp`). Likewise, the sheet themes and token rings in feature 5 are the ones the `daggerheart-core` module provides.
 
 ### 7. Statblock Sheets (Off by default)
-A replacement sheet for adversaries and environments, laid out like the statblocks in the rulebook:
-* **Statblock layout**: Uppercase name, an italic "Tier 3 Solo" line, the description, Motives & Tactics (or Impulses), and a stat box with Difficulty, Thresholds, HP and Stress, the attack (`ATK: +3 | Claws: Melee | 2d10+4 phy`) and Experiences. Environments show Difficulty and Potential Adversaries.
+A replacement sheet for adversaries and environments that looks like the statblocks in the rulebook, using the same fonts, sizes and colors as the system's statblock embeds:
+* **The statblock**: Uppercase name, the italic "Tier 3 Solo" line with its source, the description, Motives & Tactics (or Impulses), and the stat box with Difficulty, Thresholds, HP and Stress, the attack (`ATK: +3 | Claws: Melee | 2d10+4 phy`) and Experiences. Environments show Difficulty and Potential Adversaries. No portrait, no extra boxes.
 * **Features as in the book**: A FEATURES heading with features written as *Name - Passive:* and their text running on after it. Click a name to collapse or expand it. The system's settings for showing descriptions expanded by default still apply.
-* **Still playable**: Mark HP and Stress, click the attack name to roll it (right-click for damage and chat), use features, track action uses and feature resources, make a reaction roll, and click an experience to post it to chat. Effects, Notes and Potential Adversaries are in their own tabs.
-* **Choosing it**: The setting makes it the default sheet for every adversary and environment (requires a reload). When the setting is off, you can still pick *Statblock (Cosmo's Tweaks)* for a single actor via *Configure Sheet*. Follows the light/dark sheet theme.
+* **Still playable**: A slim tab bar above the statblock (Effects, Notes, Potential Adversaries, Reaction Roll, sheet settings) and HP/Stress boxes below it. Click the attack name to roll it (right-click for damage and chat), hover a feature to use it (right-click to edit or delete), click an experience to post it to chat. Action uses and feature resources show next to the feature name.
+* **Choosing it**: The setting makes it the default sheet for every adversary and environment (requires a reload). When the setting is off, you can still pick *Statblock (Cosmo's Tweaks)* for a single actor via *Configure Sheet*.
 
 ## Configuration
 

@@ -1,0 +1,20 @@
+<footer class="cosmo-sb-footer">
+    <div class="cosmo-sb-tracker">
+        <span class="cosmo-sb-tracker-label">{{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+        <span class="cosmo-sb-pips">
+            {{#each sb.hp.pips as |pip|}}
+                <a class="cosmo-sb-pip{{#if pip.filled}} filled{{/if}}" {{#if @root.editable}}data-action="toggleHitPoints"{{/if}} data-value="{{pip.value}}"></a>
+            {{/each}}
+        </span>
+        <span class="cosmo-sb-tracker-count">{{sb.hp.value}}/{{sb.hp.max}}</span>
+    </div>
+    <div class="cosmo-sb-tracker">
+        <span class="cosmo-sb-tracker-label">{{localize "DAGGERHEART.GENERAL.stress"}}</span>
+        <span class="cosmo-sb-pips">
+            {{#each sb.stress.pips as |pip|}}
+                <a class="cosmo-sb-pip stress{{#if pip.filled}} filled{{/if}}" {{#if @root.editable}}data-action="toggleStress"{{/if}} data-value="{{pip.value}}"></a>
+            {{/each}}
+        </span>
+        <span class="cosmo-sb-tracker-count">{{sb.stress.value}}/{{sb.stress.max}}</span>
+    </div>
+</footer>

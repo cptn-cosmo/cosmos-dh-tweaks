@@ -7,9 +7,9 @@
                 <span class="cosmo-sb-divider"></span>
                 <span><strong>{{localize "DAGGERHEART.ACTORS.Adversary.Embed.thresholds"}}:</strong> {{sb.thresholds}}</span>
                 <span class="cosmo-sb-divider"></span>
-                <span><strong>{{localize "DAGGERHEART.GENERAL.HitPoints.short"}}:</strong> {{sb.hp.max}}</span>
+                <span><strong>{{localize "DAGGERHEART.GENERAL.HitPoints.short"}}:</strong> {{sb.hpMax}}</span>
                 <span class="cosmo-sb-divider"></span>
-                <span><strong>{{localize "DAGGERHEART.GENERAL.stress"}}:</strong> {{sb.stress.max}}</span>
+                <span><strong>{{localize "DAGGERHEART.GENERAL.stress"}}:</strong> {{sb.stressMax}}</span>
             </div>
             {{#if sb.attack}}
                 <div class="cosmo-sb-row cosmo-sb-attack" data-item-uuid="{{sb.attack.uuid}}" data-type="attack">
@@ -42,26 +42,6 @@
                     {{/each}}
                 </div>
             {{/if}}
-        </section>
-        <section class="cosmo-sb-trackers">
-            <div class="cosmo-sb-tracker">
-                <span class="cosmo-sb-tracker-label">{{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
-                <span class="cosmo-sb-pips">
-                    {{#each sb.hp.pips as |pip|}}
-                        <a class="cosmo-sb-pip{{#if pip.filled}} filled{{/if}}" {{#if @root.editable}}data-action="toggleHitPoints"{{/if}} data-value="{{pip.value}}"></a>
-                    {{/each}}
-                </span>
-                <span class="cosmo-sb-tracker-count">{{sb.hp.value}}/{{sb.hp.max}}</span>
-            </div>
-            <div class="cosmo-sb-tracker">
-                <span class="cosmo-sb-tracker-label">{{localize "DAGGERHEART.GENERAL.stress"}}</span>
-                <span class="cosmo-sb-pips">
-                    {{#each sb.stress.pips as |pip|}}
-                        <a class="cosmo-sb-pip stress{{#if pip.filled}} filled{{/if}}" {{#if @root.editable}}data-action="toggleStress"{{/if}} data-value="{{pip.value}}"></a>
-                    {{/each}}
-                </span>
-                <span class="cosmo-sb-tracker-count">{{sb.stress.value}}/{{sb.stress.max}}</span>
-            </div>
         </section>
         {{> cosmo-sb-features features=sb.features evolution=sb.evolutionFeatures}}
     </div>

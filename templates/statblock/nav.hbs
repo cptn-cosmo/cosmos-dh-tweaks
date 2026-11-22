@@ -4,13 +4,9 @@
     {{/each}}
     <span class="cosmo-sb-nav-spacer"></span>
     {{#if (eq document.type "adversary")}}
-        <button type="button" class="cosmo-sb-nav-button" data-action="reactionRoll">
-            <i class="fa-solid fa-dice"></i> {{localize "DAGGERHEART.GENERAL.Roll.reaction"}}
-        </button>
+        <button type="button" class="cosmo-sb-nav-button" data-action="reactionRoll"><i class="fa-solid fa-dice"></i> {{localize "DAGGERHEART.GENERAL.Roll.reaction"}}</button>
     {{/if}}
     {{#if editable}}
-        <button type="button" class="cosmo-sb-nav-button icon" data-action="openSettings" data-tooltip="DAGGERHEART.UI.Tooltip.openSheetSettings">
-            <i class="fa-solid fa-wrench"></i>
-        </button>
+        <a class="cosmo-sb-nav-icon" data-action="openSettings" data-tooltip="DAGGERHEART.UI.Tooltip.openSheetSettings"><i class="fa-solid fa-wrench"></i></a>
     {{/if}}
 </nav>
