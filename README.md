@@ -42,12 +42,18 @@ Switch to the sheet themes and token rings that ship with the Daggerheart Core R
 Replaces Foundry's spinning pause icon with the static Daggerheart emblem from the system, and stops the "Game Paused" banner from pulsing.
 * **No bundled artwork**: This module does not ship the Daggerheart logo or any other artwork. It only points the pause icon at the emblem the installed Daggerheart system already provides (`systems/daggerheart/assets/logos/DaggerheartLogo.webp`). Likewise, the sheet themes and token rings in feature 5 are the ones the `daggerheart-core` module provides.
 
+### 7. Book Statblock Sheets (Off by default)
+Styles adversary and environment sheets like the statblocks in the rulebook:
+* **Statblock layout**: Uppercase name, an italic "Tier 3 Solo" line, the description, Motives & Tactics (or Impulses), and a stat box with Difficulty, Thresholds, HP and Stress, the attack (`ATK: +3 | Claws: Melee | 2d10+4`) and Experiences. Environments show Difficulty and Potential Adversaries.
+* **Features as in the book**: A FEATURES heading and features shown as *Name - Passive:*. They still collapse and expand on click, and follow the system's settings for showing descriptions expanded by default.
+* **Still playable**: The adversary sidebar keeps the portrait, HP and Stress trackers, the attack roll and the reaction roll. Clicking an experience in the stat box posts it to chat. Follows the light/dark sheet theme.
+
 ## Configuration
 
 The GM opens **Configure Settings** > **Cosmo's Daggerheart Tweaks** > **Open Settings**. Every option applies to the whole world (GMs and players alike). The settings window has a tab per area:
 * **Fear Tracker**: color gradient, icon, token shape, and the max-fear glow.
 * **Spotlight**: Token HUD spotlight button and the GM's request indicator.
-* **Sheets & Tokens**: Daggerheart Core Rulebook sheet theme and token ring. Only shown when `daggerheart-core` is active.
+* **Sheets & Tokens**: Book Statblock Sheets, plus the Daggerheart Core Rulebook sheet theme and token ring (only shown when `daggerheart-core` is active).
 * **Interface**: Minimal Countdown UI and the Daggerheart pause icon.
 
 Custom color and icon fields only appear when *Custom* is selected.

@@ -187,3 +187,303 @@
     flex-direction: column;
     gap: 0.5rem;
 }
+
+/* -------------------------------------------- */
+/*  Book statblock sheets                       */
+/* -------------------------------------------- */
+/* Adversary and environment sheets restyled after the rulebook statblocks (same colors as the system's actor embeds).
+   Only the look changes: the system's markup, collapsible features and actions stay as they are. */
+
+.application.sheet.daggerheart.actor.dh-style.cosmo-statblock {
+    --cosmo-sb-bg: light-dark(#f4f0e7, #0f0f14);
+    --cosmo-sb-stats-bg: light-dark(#ffffff, #000000);
+    --cosmo-sb-text: light-dark(#000000, var(--color-text-primary, #efe6d8));
+    --cosmo-sb-subtle: light-dark(#4a4335, #b8ad99);
+    --cosmo-sb-border: light-dark(#ddd0b9, #efe6d880);
+    --cosmo-sb-hover: light-dark(#e9e1d0, #1d1c24);
+    --cosmo-sb-font: var(--dh-font-body, "Montserrat"), sans-serif;
+    --cosmo-sb-pad: 16px;
+
+    background: var(--cosmo-sb-bg);
+    color: var(--cosmo-sb-text);
+
+    .window-content {
+        background: var(--cosmo-sb-bg);
+        color: var(--cosmo-sb-text);
+        font-family: var(--cosmo-sb-font);
+    }
+
+    line-div,
+    side-line-div {
+        display: none;
+    }
+
+    /* Header: NAME / Tier 3 Solo / description / Motives & Tactics */
+    .adversary-header-sheet,
+    .environment-header-sheet {
+        .name-row,
+        .name-section {
+            padding-bottom: 0;
+        }
+
+        h1.actor-name {
+            font-family: var(--cosmo-sb-font);
+            font-size: 1.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1.05;
+            color: var(--cosmo-sb-text);
+            margin: 0;
+        }
+
+        .tags {
+            display: block;
+            padding-bottom: 0;
+            font-size: 1.125rem;
+            font-style: italic;
+            font-weight: 600;
+            line-height: 1.3;
+
+            .tag {
+                display: inline;
+                padding: 0;
+                background: none;
+                border: none;
+                font: inherit;
+                color: inherit;
+            }
+
+            /* Token size and the environment's difficulty are not part of the book's tier line. */
+            .tag:has(> .fa-circle-user),
+            .tag.difficulty {
+                display: none;
+            }
+
+            /* Horde HP: "(5/HP)" */
+            .tag:has(> span + span) {
+                display: inline-flex;
+                &::before { content: "("; }
+                &::after { content: ")"; }
+            }
+        }
+
+        .adversary-info,
+        .environment-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding-top: 2px;
+            padding-bottom: 0;
+            line-height: 1.3;
+
+            p { margin: 0; }
+            .description, .description p { font-style: italic; }
+        }
+    }
+
+    .adversary-header-sheet > *:not(line-div, .tab-navigation, .cosmo-sb-stats) {
+        padding-left: var(--cosmo-sb-pad);
+        padding-right: var(--cosmo-sb-pad);
+    }
+
+    .environment-header-sheet {
+        .actor-container {
+            align-items: flex-start;
+            padding: 0 var(--cosmo-sb-pad);
+        }
+        .actor-container img.profile {
+            border-radius: 6px;
+            border: 1px solid var(--cosmo-sb-border);
+        }
+        .environment-info {
+            padding-left: var(--cosmo-sb-pad);
+            padding-right: var(--cosmo-sb-pad);
+        }
+    }
+
+    /* Stat box: white band between thin rules */
+    .cosmo-sb-stats {
+        margin: 6px var(--cosmo-sb-pad) 4px;
+        padding: 5px 8px 4px;
+        background: var(--cosmo-sb-stats-bg);
+        border-top: 1px solid var(--cosmo-sb-border);
+        border-bottom: 1px solid var(--cosmo-sb-border);
+        font-size: var(--font-size-14, 0.875rem);
+        line-height: 1.3;
+
+        .cosmo-sb-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .cosmo-sb-row.experiences {
+            display: block;
+            margin-top: 4px;
+            padding-top: 4px;
+            border-top: 1px dashed var(--cosmo-sb-border);
+        }
+
+        .cosmo-sb-divider {
+            display: inline-block;
+            align-self: center;
+            width: 1px;
+            height: 1em;
+            margin: 0 6px;
+            background: var(--cosmo-sb-text);
+        }
+
+        a.cosmo-sb-experience {
+            color: inherit;
+            cursor: pointer;
+            &:hover { text-decoration: underline; text-shadow: none; }
+        }
+    }
+
+    /* Tabs stay, quietly */
+    .tab-navigation {
+        margin-top: 4px;
+        border-color: var(--cosmo-sb-border);
+
+        nav.tabs a, .feature-tab, a.item {
+            font-family: var(--cosmo-sb-font);
+        }
+    }
+
+    /* FEATURES */
+    .cosmo-sb-features-heading {
+        margin: 8px 0 0;
+        padding: 0 var(--cosmo-sb-pad);
+        border: none;
+        font-family: var(--cosmo-sb-font);
+        font-size: 1.25rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        line-height: 1.25;
+        color: var(--cosmo-sb-text);
+    }
+
+    .tab.features .feature-section {
+        padding-top: 2px;
+        gap: 4px;
+
+        .evolution-section {
+            border-top: 1px dashed var(--cosmo-sb-border);
+            margin: 4px 0;
+        }
+    }
+
+    .tab.features .inventory-item {
+        .item-main {
+            margin: 0;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        &:hover .item-main {
+            background: var(--cosmo-sb-hover);
+        }
+
+        .inventory-item-header {
+            gap: 6px;
+            align-items: flex-start;
+
+            .img-portrait {
+                flex: 0 0 22px;
+                height: 22px;
+                margin-top: 1px;
+
+                .item-img,
+                .roll-img {
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 3px;
+                }
+            }
+
+            /* "Name - Passive:" */
+            .item-label {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: baseline;
+                column-gap: 0.3em;
+                font-size: var(--font-size-14, 0.875rem);
+                font-style: italic;
+                font-weight: 700;
+                line-height: 1.35;
+            }
+
+            .item-name {
+                font-size: inherit;
+                font-family: var(--cosmo-sb-font);
+            }
+
+            .item-tags {
+                display: inline-flex;
+                flex-wrap: wrap;
+                gap: 0.3em;
+                margin: 0;
+                padding: 0;
+
+                .tag {
+                    display: none;
+                }
+
+                .tag.feature-form {
+                    display: inline;
+                    padding: 0;
+                    background: none;
+                    border: none;
+                    font: inherit;
+                    color: inherit;
+
+                    &::before { content: "- "; }
+                    &::after { content: ":"; }
+                }
+            }
+        }
+
+        .inventory-item-content.extensible {
+            padding-left: 28px;
+
+            &.extended {
+                padding-top: 1px;
+            }
+
+            .inventory-description {
+                font-family: var(--cosmo-sb-font);
+                font-size: var(--font-size-14, 0.875rem);
+                line-height: 1.35;
+                color: var(--cosmo-sb-text);
+
+                p { margin: 0 0 0.25em; }
+                p:last-child { margin-bottom: 0; }
+            }
+        }
+
+        .item-buttons {
+            padding-left: 28px;
+        }
+    }
+
+    /* Adversary sidebar: portrait, HP/Stress trackers, attack roll and reaction roll stay; the numbers it showed
+       (difficulty, attack, thresholds, experiences) are in the stat box now. */
+    .adversary-sidebar-sheet {
+        background: var(--cosmo-sb-bg);
+        background-image: none;
+        border-right: 1px solid var(--cosmo-sb-border);
+
+        .portrait {
+            border-bottom: 1px solid var(--cosmo-sb-border);
+        }
+
+        .info-section .status-section,
+        .experience-section {
+            display: none;
+        }
+
+        .info-section {
+            margin-bottom: -8px;
+        }
+    }
+}

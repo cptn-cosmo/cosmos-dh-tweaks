@@ -654,6 +654,147 @@ Hooks.once("init", () => {
 });
 
 /* -------------------------------------------- */
+/*  Book statblock sheets                       */
+/* -------------------------------------------- */
+// Restyle adversary and environment sheets after the rulebook statblocks. The system's markup is left in place and
+// only restyled, so feature collapsing and the system's "expand descriptions by default" settings keep working; the
+// book's stat box and "Features" heading are added on each render.
+
+const STATBLOCK_TYPES = new Set(["adversary", "environment"]);
+
+function rerenderStatblockSheets() {
+    for (const app of foundry.applications.instances.values()) {
+        if (app.rendered && app.document instanceof Actor && STATBLOCK_TYPES.has(app.document.type)) app.render();
+    }
+}
+
+Hooks.once("init", () => {
+    game.settings.register(MODULE_ID, "statblockSheets", {
+        name: "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Name",
+        hint: "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Hint",
+        scope: "world",
+        config: false,
+        type: Boolean,
+        default: false,
+        onChange: rerenderStatblockSheets
+    });
+});
+
+function statblockEl(tag, className, text) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text !== undefined) el.textContent = text;
+    return el;
+}
+
+// One "Label: value" entry of a stat row. A row's entries are separated by dividers, as in the book.
+function statblockEntry(label, value) {
+    const entry = statblockEl("span", "cosmo-sb-entry");
+    if (label) entry.append(statblockEl("strong", null, `${label}:`), " ");
+    if (value instanceof Node) entry.append(value);
+    else entry.append(String(value ?? "–"));
+    return entry;
+}
+
+function statblockRow(entries, className = "") {
+    const row = statblockEl("div", `cosmo-sb-row ${className}`.trim());
+    entries.filter(Boolean).forEach((entry, i) => {
+        if (i) row.append(statblockEl("span", "cosmo-sb-divider"));
+        row.append(entry);
+    });
+    return row;
+}
+
+function signed(value) {
+    const n = Number(value);
+    if (value === null || value === undefined || value === "") return "–";
+    if (!Number.isFinite(n)) return `+${value}`;
+    return n < 0 ? `${n}` : `+${n}`;
+}
+
+function adversaryStats(actor) {
+    const system = actor.system;
+    const t = key => game.i18n.localize(key);
+    const stats = statblockEl("section", "cosmo-sb-stats");
+
+    stats.append(statblockRow([
+        statblockEntry(t("DAGGERHEART.GENERAL.difficulty"), system.difficulty || "–"),
+        statblockEntry(t("DAGGERHEART.ACTORS.Adversary.Embed.thresholds"),
+            `${system.damageThresholds?.major ?? "–"}/${system.damageThresholds?.severe ?? "–"}`),
+        statblockEntry(t("DAGGERHEART.GENERAL.HitPoints.short"), system.resources?.hitPoints?.max ?? "–"),
+        statblockEntry(t("DAGGERHEART.GENERAL.stress"), system.resources?.stress?.max ?? "–")
+    ]));
+
+    const attack = system.attack;
+    if (attack) {
+        let damage = "";
+        try { damage = attack.getDamageFormula?.() ?? ""; } catch (error) { console.warn(MODULE_ID, error); }
+        const range = game.i18n.localize(CONFIG.DH.GENERAL.range?.[attack.range]?.label ?? "");
+        const crit = Number(system.criticalThreshold);
+        stats.append(statblockRow([
+            statblockEntry(t("DAGGERHEART.ACTORS.Adversary.Embed.attack"), signed(attack.roll?.bonus)),
+            statblockEntry(attack.name, range || "–"),
+            damage ? statblockEntry(null, damage) : null,
+            crit && crit < 20 ? statblockEntry(t("DAGGERHEART.GENERAL.criticalShort"), `${crit}+`) : null
+        ], "attack"));
+    }
+
+    const experiences = Object.entries(system.experiences ?? {});
+    if (experiences.length) {
+        const list = statblockEl("span", "cosmo-sb-experiences");
+        experiences.forEach(([id, exp], i) => {
+            if (i) list.append(", ");
+            // Same action as the sidebar's chat button, handled by the system sheet.
+            const link = statblockEl("a", "cosmo-sb-experience", `${exp.name} ${signed(exp.value)}`);
+            link.dataset.action = "sendExpToChat";
+            link.dataset.id = id;
+            if (exp.description) link.dataset.tooltipText = exp.description;
+            list.append(link);
+        });
+        stats.append(statblockRow([statblockEntry(t("DAGGERHEART.GENERAL.Experience.plural"), list)], "experiences"));
+    }
+    return stats;
+}
+
+function environmentStats(actor) {
+    const system = actor.system;
+    const t = key => game.i18n.localize(key);
+    const stats = statblockEl("section", "cosmo-sb-stats");
+    stats.append(statblockRow([
+        statblockEntry(t("DAGGERHEART.GENERAL.difficulty"), system.difficulty || t("DAGGERHEART.ACTORS.Environment.Embed.special"))
+    ]));
+    const groups = Object.values(system._source?.potentialAdversaries ?? {}).map(group => {
+        const names = (group.adversaries ?? [])
+            .map(uuid => fromUuidSync(uuid, { strict: false })?.name)
+            .filter(Boolean);
+        return names.length ? `${group.label} (${names.join(", ")})` : group.label;
+    }).filter(Boolean);
+    stats.append(statblockRow([
+        statblockEntry(t("DAGGERHEART.ACTORS.Environment.Embed.potentialAdversaries"),
+            groups.join(", ") || t("DAGGERHEART.ACTORS.Environment.Embed.any"))
+    ], "adversaries"));
+    return stats;
+}
+
+Hooks.on("renderActorSheetV2", (app, element) => {
+    const root = app.element ?? element;
+    const actor = app.document;
+    if (!root || !STATBLOCK_TYPES.has(actor?.type)) return;
+
+    root.querySelectorAll(".cosmo-sb-stats, .cosmo-sb-features-heading").forEach(el => el.remove());
+    const enabled = game.settings.get(MODULE_ID, "statblockSheets");
+    root.classList.toggle("cosmo-statblock", enabled);
+    if (!enabled) return;
+
+    // Limited sheets show no header or features.
+    const info = root.querySelector(".adversary-header-sheet .adversary-info, .environment-header-sheet .environment-info");
+    if (info) info.after(actor.type === "adversary" ? adversaryStats(actor) : environmentStats(actor));
+
+    const features = root.querySelector(".tab.features .feature-section");
+    if (features) features.before(statblockEl("h2", "cosmo-sb-features-heading", game.i18n.localize("DAGGERHEART.GENERAL.features")));
+});
+
+/* -------------------------------------------- */
 /*  Settings window                             */
 /* -------------------------------------------- */
 // All of the module's settings live in one tabbed window, opened from the module's entry in Configure Settings.
@@ -676,6 +817,7 @@ const SETTINGS_LAYOUT = [
     },
     {
         id: "themes", icon: "fa-solid fa-palette", sections: [
+            { id: "statblock", rows: [["statblockSheets"]] },
             { id: "dhCore", rows: [["dhCoreSheetTheme"], ["dhCoreTokenRing"]] }
         ]
     },

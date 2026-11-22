@@ -61,6 +61,8 @@
   "COSMOS_DH_TWEAKS.Settings.DhCoreTokenRing.Name": "Daggerheart Core Token Ring",
   "COSMOS_DH_TWEAKS.Settings.DhCoreTokenRing.Hint": "Dynamic token ring style for the whole world, from the Daggerheart Core Rulebook module. Same as the \"Dynamic Token Ring\" core setting, limited to the Daggerheart rings.",
   "COSMOS_DH_TWEAKS.Settings.DhCoreTokenRing.Other": "— Other (set in Core settings) —",
+  "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Name": "Book Statblock Sheets",
+  "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Hint": "Style adversary and environment sheets like the rulebook statblocks: a parchment card with a Difficulty / Thresholds / HP / Stress box and \"Name - Passive:\" features. Features still collapse and follow the system's expand-by-default settings. Applies to all users.",
   "COSMOS_DH_TWEAKS.Settings.DaggerheartPauseIcon.Name": "Daggerheart Pause Icon",
   "COSMOS_DH_TWEAKS.Settings.DaggerheartPauseIcon.Hint": "Replace the spinning pause icon with the static Daggerheart emblem and stop the \"Game Paused\" banner from pulsing.",
   "COSMOS_DH_TWEAKS.SettingsWindow.Title": "Cosmo's Daggerheart Tweaks",
@@ -77,6 +79,7 @@
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.fear.icon": "Icon & Shape",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.fear.effects": "Effects",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.spotlight.hud": "Spotlight Management",
+  "COSMOS_DH_TWEAKS.SettingsWindow.Sections.themes.statblock": "Adversaries & Environments",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.themes.dhCore": "Daggerheart Core Rulebook",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.interface.widgets": "Interface",
   "COSMOS_DH_TWEAKS.Settings.DhCoreSheetTheme.Unchanged": "— Don't change —"
