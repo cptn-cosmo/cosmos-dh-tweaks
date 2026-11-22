@@ -1,0 +1,16 @@
+<nav class="cosmo-sb-nav sheet-tabs tabs" data-group="primary">
+    {{#each tabs as |tab|}}
+        <a class="cosmo-sb-tab {{tab.cssClass}}{{#if tab.empty}} empty{{/if}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">{{localize tab.label}}</a>
+    {{/each}}
+    <span class="cosmo-sb-nav-spacer"></span>
+    {{#if (eq document.type "adversary")}}
+        <button type="button" class="cosmo-sb-nav-button" data-action="reactionRoll">
+            <i class="fa-solid fa-dice"></i> {{localize "DAGGERHEART.GENERAL.Roll.reaction"}}
+        </button>
+    {{/if}}
+    {{#if editable}}
+        <button type="button" class="cosmo-sb-nav-button icon" data-action="openSettings" data-tooltip="DAGGERHEART.UI.Tooltip.openSheetSettings">
+            <i class="fa-solid fa-wrench"></i>
+        </button>
+    {{/if}}
+</nav>

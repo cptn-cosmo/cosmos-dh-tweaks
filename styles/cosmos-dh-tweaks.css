@@ -189,127 +189,169 @@
 }
 
 /* -------------------------------------------- */
-/*  Book statblock sheets                       */
+/*  Statblock sheets                            */
 /* -------------------------------------------- */
-/* Adversary and environment sheets restyled after the rulebook statblocks (same colors as the system's actor embeds).
-   Only the look changes: the system's markup, collapsible features and actions stay as they are. */
+/* Adversary and environment sheets laid out like the rulebook statblocks (same colors as the system's actor embeds).
+   Follows the sheet's light/dark theme. */
 
-.application.sheet.daggerheart.actor.dh-style.cosmo-statblock {
+.application.sheet.daggerheart.actor.dh-style.cosmo-statblock-sheet {
     --cosmo-sb-bg: light-dark(#f4f0e7, #0f0f14);
     --cosmo-sb-stats-bg: light-dark(#ffffff, #000000);
     --cosmo-sb-text: light-dark(#000000, var(--color-text-primary, #efe6d8));
-    --cosmo-sb-subtle: light-dark(#4a4335, #b8ad99);
+    --cosmo-sb-subtle: light-dark(#5b5345, #a9a092);
     --cosmo-sb-border: light-dark(#ddd0b9, #efe6d880);
     --cosmo-sb-hover: light-dark(#e9e1d0, #1d1c24);
+    --cosmo-sb-mark: light-dark(#7a1f1f, #e0655c);
+    --cosmo-sb-mark-stress: light-dark(#3a4f8a, #8fa6e8);
     --cosmo-sb-font: var(--dh-font-body, "Montserrat"), sans-serif;
-    --cosmo-sb-pad: 16px;
+    --cosmo-sb-pad: 14px;
 
     background: var(--cosmo-sb-bg);
+    background-image: none;
     color: var(--cosmo-sb-text);
 
     .window-content {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        overflow: hidden;
         background: var(--cosmo-sb-bg);
         color: var(--cosmo-sb-text);
         font-family: var(--cosmo-sb-font);
+        font-size: var(--font-size-14, 0.875rem);
+        line-height: 1.3;
     }
 
-    line-div,
-    side-line-div {
-        display: none;
-    }
+    /* Tabs + sheet buttons: a thin bar above the statblock */
+    .cosmo-sb-nav {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin: 0;
+        padding: 4px var(--cosmo-sb-pad);
+        border-bottom: 1px solid var(--cosmo-sb-border);
+        font-family: var(--cosmo-sb-font);
 
-    /* Header: NAME / Tier 3 Solo / description / Motives & Tactics */
-    .adversary-header-sheet,
-    .environment-header-sheet {
-        .name-row,
-        .name-section {
-            padding-bottom: 0;
-        }
-
-        h1.actor-name {
-            font-family: var(--cosmo-sb-font);
-            font-size: 1.75rem;
-            font-weight: 900;
+        .cosmo-sb-tab {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: var(--font-size-12, 0.75rem);
+            font-weight: 600;
             text-transform: uppercase;
-            line-height: 1.05;
-            color: var(--cosmo-sb-text);
-            margin: 0;
+            letter-spacing: 0.03em;
+            color: var(--cosmo-sb-subtle);
+            text-shadow: none;
+
+            &:hover { color: var(--cosmo-sb-text); background: var(--cosmo-sb-hover); }
+            &.active { color: var(--cosmo-sb-text); background: var(--cosmo-sb-hover); }
+            &.empty:not(.active) { opacity: 0.6; }
         }
 
-        .tags {
+        .cosmo-sb-nav-spacer { flex: 1; }
+
+        .cosmo-sb-nav-button {
+            flex: 0 0 auto;
+            width: auto;
+            height: 24px;
+            min-height: 0;
+            margin: 0;
+            padding: 0 8px;
+            border: 1px solid var(--cosmo-sb-border);
+            border-radius: 4px;
+            background: transparent;
+            color: var(--cosmo-sb-text);
+            font: 600 var(--font-size-12, 0.75rem) var(--cosmo-sb-font);
+            box-shadow: none;
+
+            &.icon { width: 24px; padding: 0; justify-content: center; }
+            &:hover { background: var(--cosmo-sb-hover); }
+        }
+    }
+
+    /* The other tabs (effects, notes, potential adversaries) keep the system's markup. */
+    .window-content > .tab {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        margin: 0;
+        padding: 8px var(--cosmo-sb-pad);
+        &:not(.active) { display: none; }
+    }
+
+    .window-content > .tab.cosmo-sb-page {
+        padding: 10px 0 12px;
+    }
+
+    /* Header */
+    .cosmo-sb-header {
+        display: flow-root;
+        padding: 0 var(--cosmo-sb-pad);
+
+        .cosmo-sb-portrait {
+            float: right;
+            width: 84px;
+            height: 84px;
+            margin: 0 0 6px 10px;
+            object-fit: cover;
+            object-position: top center;
+            border: 1px solid var(--cosmo-sb-border);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        h1.cosmo-sb-name {
             display: block;
-            padding-bottom: 0;
-            font-size: 1.125rem;
+            margin: 0 0 2px;
+            padding: 0;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            font-family: var(--cosmo-sb-font);
+            font-size: 1.6rem;
+            font-weight: 900;
+            line-height: 1.05;
+            text-align: start;
+            text-transform: uppercase;
+            color: var(--cosmo-sb-text);
+            word-break: break-word;
+
+            &:hover:not(.disabled) { border-color: var(--cosmo-sb-border); }
+            &:focus { outline: 1px solid var(--cosmo-sb-subtle); }
+        }
+
+        .cosmo-sb-tier {
+            font-size: 1.1rem;
             font-style: italic;
             font-weight: 600;
-            line-height: 1.3;
-
-            .tag {
-                display: inline;
-                padding: 0;
-                background: none;
-                border: none;
-                font: inherit;
-                color: inherit;
-            }
-
-            /* Token size and the environment's difficulty are not part of the book's tier line. */
-            .tag:has(> .fa-circle-user),
-            .tag.difficulty {
-                display: none;
-            }
-
-            /* Horde HP: "(5/HP)" */
-            .tag:has(> span + span) {
-                display: inline-flex;
-                &::before { content: "("; }
-                &::after { content: ")"; }
-            }
+            line-height: 1.25;
         }
 
-        .adversary-info,
-        .environment-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            padding-top: 2px;
-            padding-bottom: 0;
-            line-height: 1.3;
-
+        .cosmo-sb-description {
+            margin-top: 1px;
+            font-style: italic;
             p { margin: 0; }
-            .description, .description p { font-style: italic; }
+            section.secret {
+                margin: 0;
+                padding: 0;
+                border: none;
+                background: none;
+            }
         }
-    }
 
-    .adversary-header-sheet > *:not(line-div, .tab-navigation, .cosmo-sb-stats) {
-        padding-left: var(--cosmo-sb-pad);
-        padding-right: var(--cosmo-sb-pad);
-    }
-
-    .environment-header-sheet {
-        .actor-container {
-            align-items: flex-start;
-            padding: 0 var(--cosmo-sb-pad);
-        }
-        .actor-container img.profile {
-            border-radius: 6px;
-            border: 1px solid var(--cosmo-sb-border);
-        }
-        .environment-info {
-            padding-left: var(--cosmo-sb-pad);
-            padding-right: var(--cosmo-sb-pad);
+        .cosmo-sb-motives {
+            margin-top: 1px;
+            p { display: inline; margin: 0; }
         }
     }
 
     /* Stat box: white band between thin rules */
     .cosmo-sb-stats {
-        margin: 6px var(--cosmo-sb-pad) 4px;
+        clear: both;
+        margin: 6px var(--cosmo-sb-pad) 0;
         padding: 5px 8px 4px;
         background: var(--cosmo-sb-stats-bg);
         border-top: 1px solid var(--cosmo-sb-border);
         border-bottom: 1px solid var(--cosmo-sb-border);
-        font-size: var(--font-size-14, 0.875rem);
-        line-height: 1.3;
 
         .cosmo-sb-row {
             display: flex;
@@ -317,8 +359,12 @@
             align-items: baseline;
         }
 
-        .cosmo-sb-row.experiences {
+        .cosmo-sb-row.cosmo-sb-experiences,
+        .cosmo-sb-row.cosmo-sb-adversaries {
             display: block;
+        }
+
+        .cosmo-sb-row.cosmo-sb-experiences {
             margin-top: 4px;
             padding-top: 4px;
             border-top: 1px dashed var(--cosmo-sb-border);
@@ -333,157 +379,185 @@
             background: var(--cosmo-sb-text);
         }
 
-        a.cosmo-sb-experience {
+        a {
             color: inherit;
+            text-shadow: none;
             cursor: pointer;
-            &:hover { text-decoration: underline; text-shadow: none; }
+            &:hover { text-decoration: underline; }
         }
     }
 
-    /* Tabs stay, quietly */
-    .tab-navigation {
-        margin-top: 4px;
-        border-color: var(--cosmo-sb-border);
+    /* HP / Stress marking, under the stat box */
+    .cosmo-sb-trackers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 18px;
+        margin: 6px var(--cosmo-sb-pad) 0;
 
-        nav.tabs a, .feature-tab, a.item {
-            font-family: var(--cosmo-sb-font);
+        .cosmo-sb-tracker {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cosmo-sb-tracker-label {
+            font-weight: 700;
+            min-width: 2.2em;
+        }
+
+        .cosmo-sb-tracker-count {
+            font-size: var(--font-size-12, 0.75rem);
+            color: var(--cosmo-sb-subtle);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .cosmo-sb-pips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+
+        .cosmo-sb-pip {
+            width: 13px;
+            height: 13px;
+            border: 1.5px solid var(--cosmo-sb-text);
+            border-radius: 2px;
+            background: var(--cosmo-sb-stats-bg);
+            transition: background 0.15s ease;
+
+            &[data-action] { cursor: pointer; }
+            &[data-action]:hover { background: var(--cosmo-sb-hover); }
+            &.filled { background: var(--cosmo-sb-mark); border-color: var(--cosmo-sb-mark); }
+            &.stress { border-radius: 50%; }
+            &.stress.filled { background: var(--cosmo-sb-mark-stress); border-color: var(--cosmo-sb-mark-stress); }
         }
     }
 
     /* FEATURES */
+    .cosmo-sb-features {
+        margin-top: 8px;
+    }
+
     .cosmo-sb-features-heading {
-        margin: 8px 0 0;
+        margin: 0 0 2px;
         padding: 0 var(--cosmo-sb-pad);
         border: none;
         font-family: var(--cosmo-sb-font);
         font-size: 1.25rem;
         font-weight: 700;
-        text-transform: uppercase;
         line-height: 1.25;
+        text-transform: uppercase;
         color: var(--cosmo-sb-text);
     }
 
-    .tab.features .feature-section {
-        padding-top: 2px;
-        gap: 4px;
+    .cosmo-sb-feature-list {
+        list-style: none;
+        margin: 0;
+        padding: 0 var(--cosmo-sb-pad);
 
-        .evolution-section {
+        &.evolution {
+            margin-top: 4px;
+            padding-top: 4px;
             border-top: 1px dashed var(--cosmo-sb-border);
-            margin: 4px 0;
         }
     }
 
-    .tab.features .inventory-item {
-        .item-main {
-            margin: 0;
-            padding: 2px 4px;
-            border-radius: 4px;
+    /* "Name - Passive:" with the description running on after it, as in the book. */
+    .cosmo-sb-feature.inventory-item {
+        display: block;
+        width: auto;
+        margin: 0 0 3px;
+        padding: 1px 4px 1px calc(4px + 1ch);
+        border-radius: 4px;
+        text-indent: -1ch;
+
+        &:hover { background: var(--cosmo-sb-hover); }
+        &.inactive { opacity: 0.45; }
+
+        .cosmo-sb-feature-head {
+            display: inline;
+            &.toggle { cursor: pointer; }
         }
 
-        &:hover .item-main {
-            background: var(--cosmo-sb-hover);
+        .cosmo-sb-feature-name {
+            font-style: italic;
+            font-weight: 700;
         }
 
-        .inventory-item-header {
-            gap: 6px;
-            align-items: flex-start;
+        .cosmo-sb-feature-head.toggle:hover .cosmo-sb-feature-name {
+            text-decoration: underline dotted;
+        }
 
-            .img-portrait {
-                flex: 0 0 22px;
-                height: 22px;
-                margin-top: 1px;
+        .cosmo-sb-use {
+            display: inline-block;
+            margin: 0 2px;
+            text-indent: 0;
+            color: var(--cosmo-sb-subtle);
+            text-shadow: none;
+            &:hover { color: var(--cosmo-sb-text); }
+        }
 
-                .item-img,
-                .roll-img {
-                    width: 22px;
-                    height: 22px;
-                    border-radius: 3px;
-                }
+        .cosmo-sb-uses {
+            display: inline-block;
+            text-indent: 0;
+
+            button {
+                width: auto;
+                height: 18px;
+                min-height: 0;
+                margin: 0 2px;
+                padding: 0 5px;
+                border: 1px solid var(--cosmo-sb-border);
+                border-radius: 9px;
+                background: var(--cosmo-sb-stats-bg);
+                color: var(--cosmo-sb-text);
+                font: 600 var(--font-size-11, 0.7rem) var(--cosmo-sb-font);
+                line-height: 16px;
+                box-shadow: none;
             }
+        }
 
-            /* "Name - Passive:" */
-            .item-label {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: baseline;
-                column-gap: 0.3em;
-                font-size: var(--font-size-14, 0.875rem);
-                font-style: italic;
-                font-weight: 700;
-                line-height: 1.35;
-            }
+        .cosmo-sb-resource {
+            display: inline-flex;
+            vertical-align: middle;
+            margin: 0 2px;
+            text-indent: 0;
 
-            .item-name {
-                font-size: inherit;
-                font-family: var(--cosmo-sb-font);
-            }
-
-            .item-tags {
+            .item-resource,
+            .item-resources {
                 display: inline-flex;
-                flex-wrap: wrap;
-                gap: 0.3em;
-                margin: 0;
-                padding: 0;
+                align-items: center;
+                gap: 3px;
+            }
 
-                .tag {
-                    display: none;
-                }
-
-                .tag.feature-form {
-                    display: inline;
-                    padding: 0;
-                    background: none;
-                    border: none;
-                    font: inherit;
-                    color: inherit;
-
-                    &::before { content: "- "; }
-                    &::after { content: ":"; }
-                }
+            input.inventory-item-resource {
+                width: 3em;
+                height: 20px;
+                text-align: center;
             }
         }
 
+        /* Collapsed: just the name. Expanded (click, or the system's expand-by-default settings): text follows it. */
         .inventory-item-content.extensible {
-            padding-left: 28px;
+            display: none;
+            padding: 0;
+            text-indent: 0;
 
-            &.extended {
-                padding-top: 1px;
-            }
+            &.extended { display: inline; }
 
             .inventory-description {
+                display: inline;
+                overflow: visible;
                 font-family: var(--cosmo-sb-font);
-                font-size: var(--font-size-14, 0.875rem);
-                line-height: 1.35;
+                font-size: inherit;
+                line-height: inherit;
                 color: var(--cosmo-sb-text);
 
-                p { margin: 0 0 0.25em; }
-                p:last-child { margin-bottom: 0; }
+                > p:first-child { display: inline; }
+                p { margin: 0.2em 0 0; }
+                > p:first-child { margin: 0; }
+                ul, ol { margin: 0.2em 0 0; padding-left: 1.5em; }
             }
-        }
-
-        .item-buttons {
-            padding-left: 28px;
-        }
-    }
-
-    /* Adversary sidebar: portrait, HP/Stress trackers, attack roll and reaction roll stay; the numbers it showed
-       (difficulty, attack, thresholds, experiences) are in the stat box now. */
-    .adversary-sidebar-sheet {
-        background: var(--cosmo-sb-bg);
-        background-image: none;
-        border-right: 1px solid var(--cosmo-sb-border);
-
-        .portrait {
-            border-bottom: 1px solid var(--cosmo-sb-border);
-        }
-
-        .info-section .status-section,
-        .experience-section {
-            display: none;
-        }
-
-        .info-section {
-            margin-bottom: -8px;
         }
     }
 }

@@ -42,18 +42,19 @@ Switch to the sheet themes and token rings that ship with the Daggerheart Core R
 Replaces Foundry's spinning pause icon with the static Daggerheart emblem from the system, and stops the "Game Paused" banner from pulsing.
 * **No bundled artwork**: This module does not ship the Daggerheart logo or any other artwork. It only points the pause icon at the emblem the installed Daggerheart system already provides (`systems/daggerheart/assets/logos/DaggerheartLogo.webp`). Likewise, the sheet themes and token rings in feature 5 are the ones the `daggerheart-core` module provides.
 
-### 7. Book Statblock Sheets (Off by default)
-Styles adversary and environment sheets like the statblocks in the rulebook:
-* **Statblock layout**: Uppercase name, an italic "Tier 3 Solo" line, the description, Motives & Tactics (or Impulses), and a stat box with Difficulty, Thresholds, HP and Stress, the attack (`ATK: +3 | Claws: Melee | 2d10+4`) and Experiences. Environments show Difficulty and Potential Adversaries.
-* **Features as in the book**: A FEATURES heading and features shown as *Name - Passive:*. They still collapse and expand on click, and follow the system's settings for showing descriptions expanded by default.
-* **Still playable**: The adversary sidebar keeps the portrait, HP and Stress trackers, the attack roll and the reaction roll. Clicking an experience in the stat box posts it to chat. Follows the light/dark sheet theme.
+### 7. Statblock Sheets (Off by default)
+A replacement sheet for adversaries and environments, laid out like the statblocks in the rulebook:
+* **Statblock layout**: Uppercase name, an italic "Tier 3 Solo" line, the description, Motives & Tactics (or Impulses), and a stat box with Difficulty, Thresholds, HP and Stress, the attack (`ATK: +3 | Claws: Melee | 2d10+4 phy`) and Experiences. Environments show Difficulty and Potential Adversaries.
+* **Features as in the book**: A FEATURES heading with features written as *Name - Passive:* and their text running on after it. Click a name to collapse or expand it. The system's settings for showing descriptions expanded by default still apply.
+* **Still playable**: Mark HP and Stress, click the attack name to roll it (right-click for damage and chat), use features, track action uses and feature resources, make a reaction roll, and click an experience to post it to chat. Effects, Notes and Potential Adversaries are in their own tabs.
+* **Choosing it**: The setting makes it the default sheet for every adversary and environment (requires a reload). When the setting is off, you can still pick *Statblock (Cosmo's Tweaks)* for a single actor via *Configure Sheet*. Follows the light/dark sheet theme.
 
 ## Configuration
 
 The GM opens **Configure Settings** > **Cosmo's Daggerheart Tweaks** > **Open Settings**. Every option applies to the whole world (GMs and players alike). The settings window has a tab per area:
 * **Fear Tracker**: color gradient, icon, token shape, and the max-fear glow.
 * **Spotlight**: Token HUD spotlight button and the GM's request indicator.
-* **Sheets & Tokens**: Book Statblock Sheets, plus the Daggerheart Core Rulebook sheet theme and token ring (only shown when `daggerheart-core` is active).
+* **Sheets & Tokens**: Statblock Sheets, plus the Daggerheart Core Rulebook sheet theme and token ring (only shown when `daggerheart-core` is active).
 * **Interface**: Minimal Countdown UI and the Daggerheart pause icon.
 
 Custom color and icon fields only appear when *Custom* is selected.

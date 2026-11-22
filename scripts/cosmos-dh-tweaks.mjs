@@ -654,19 +654,15 @@ Hooks.once("init", () => {
 });
 
 /* -------------------------------------------- */
-/*  Book statblock sheets                       */
+/*  Statblock sheets                            */
 /* -------------------------------------------- */
-// Restyle adversary and environment sheets after the rulebook statblocks. The system's markup is left in place and
-// only restyled, so feature collapsing and the system's "expand descriptions by default" settings keep working; the
-// book's stat box and "Features" heading are added on each render.
+// Replacement adversary and environment sheets laid out like the rulebook statblocks. They extend the system's own
+// sheets, so all of the system's actions keep working: HP/Stress marking, attack and reaction rolls, feature use,
+// context menus, resources, and feature descriptions that collapse and follow the system's expand-by-default
+// settings. Registered for every world (pick it per actor via Configure Sheet); the setting makes it the default.
 
-const STATBLOCK_TYPES = new Set(["adversary", "environment"]);
-
-function rerenderStatblockSheets() {
-    for (const app of foundry.applications.instances.values()) {
-        if (app.rendered && app.document instanceof Actor && STATBLOCK_TYPES.has(app.document.type)) app.render();
-    }
-}
+const STATBLOCK_TEMPLATES = `modules/${MODULE_ID}/templates/statblock`;
+const SB = "COSMOS_DH_TWEAKS.Statblock";
 
 Hooks.once("init", () => {
     game.settings.register(MODULE_ID, "statblockSheets", {
@@ -676,122 +672,177 @@ Hooks.once("init", () => {
         config: false,
         type: Boolean,
         default: false,
-        onChange: rerenderStatblockSheets
+        requiresReload: true
+    });
+    foundry.applications.handlebars.loadTemplates({
+        "cosmo-sb-features": `${STATBLOCK_TEMPLATES}/features.hbs`,
+        "cosmo-sb-header": `${STATBLOCK_TEMPLATES}/header.hbs`
     });
 });
 
-function statblockEl(tag, className, text) {
-    const el = document.createElement(tag);
-    if (className) el.className = className;
-    if (text !== undefined) el.textContent = text;
-    return el;
-}
-
-// One "Label: value" entry of a stat row. A row's entries are separated by dividers, as in the book.
-function statblockEntry(label, value) {
-    const entry = statblockEl("span", "cosmo-sb-entry");
-    if (label) entry.append(statblockEl("strong", null, `${label}:`), " ");
-    if (value instanceof Node) entry.append(value);
-    else entry.append(String(value ?? "–"));
-    return entry;
-}
-
-function statblockRow(entries, className = "") {
-    const row = statblockEl("div", `cosmo-sb-row ${className}`.trim());
-    entries.filter(Boolean).forEach((entry, i) => {
-        if (i) row.append(statblockEl("span", "cosmo-sb-divider"));
-        row.append(entry);
-    });
-    return row;
-}
-
 function signed(value) {
-    const n = Number(value);
     if (value === null || value === undefined || value === "") return "–";
+    const n = Number(value);
     if (!Number.isFinite(n)) return `+${value}`;
     return n < 0 ? `${n}` : `+${n}`;
 }
 
-function adversaryStats(actor) {
+function pips(resource) {
+    const max = Number(resource?.max) || 0;
+    const value = Number(resource?.value) || 0;
+    return { value, max, pips: Array.from({ length: max }, (_, i) => ({ value: i + 1, filled: i < value })) };
+}
+
+function attackDamage(attack) {
+    let formula = "";
+    try { formula = attack.getDamageFormula?.() ?? ""; } catch (error) { console.warn(MODULE_ID, error); }
+    const types = [...(attack.damage?.main?.type ?? [])]
+        .map(type => CONFIG.DH.GENERAL.damageTypes?.[type]?.abbreviation)
+        .filter(Boolean)
+        .map(key => game.i18n.localize(key).toLowerCase());
+    return [formula, types.join("/")].filter(Boolean).join(" ");
+}
+
+// Adds what the statblock templates need on top of the system's own header/features context.
+function statblockContext(sheet, context) {
+    const actor = sheet.document;
     const system = actor.system;
     const t = key => game.i18n.localize(key);
-    const stats = statblockEl("section", "cosmo-sb-stats");
+    const sb = { isAdversary: actor.type === "adversary" };
 
-    stats.append(statblockRow([
-        statblockEntry(t("DAGGERHEART.GENERAL.difficulty"), system.difficulty || "–"),
-        statblockEntry(t("DAGGERHEART.ACTORS.Adversary.Embed.thresholds"),
-            `${system.damageThresholds?.major ?? "–"}/${system.damageThresholds?.severe ?? "–"}`),
-        statblockEntry(t("DAGGERHEART.GENERAL.HitPoints.short"), system.resources?.hitPoints?.max ?? "–"),
-        statblockEntry(t("DAGGERHEART.GENERAL.stress"), system.resources?.stress?.max ?? "–")
-    ]));
-
-    const attack = system.attack;
-    if (attack) {
-        let damage = "";
-        try { damage = attack.getDamageFormula?.() ?? ""; } catch (error) { console.warn(MODULE_ID, error); }
-        const range = game.i18n.localize(CONFIG.DH.GENERAL.range?.[attack.range]?.label ?? "");
+    if (sb.isAdversary) {
+        const type = t(CONFIG.DH.ACTOR.allAdversaryTypes()[system.type]?.label ?? "");
+        sb.tierLine = game.i18n.format("DAGGERHEART.GENERAL.Tiers.typed", { tier: system.tier, type });
+        if (system.type === "horde") sb.horde = `(${system.typeData?.hordeHP ?? "?"}/${t("DAGGERHEART.GENERAL.HitPoints.short")})`;
+        sb.subTypes = Object.keys(system.subTypes ?? {}).map(key => CONFIG.DH.ACTOR.adversarySubTypes?.[key]?.label).filter(Boolean).map(t);
+        sb.hp = pips(system.resources?.hitPoints);
+        sb.stress = pips(system.resources?.stress);
+        sb.thresholds = `${system.damageThresholds?.major ?? "–"}/${system.damageThresholds?.severe ?? "–"}`;
+        const attack = system.attack;
+        if (attack) {
+            sb.attack = {
+                uuid: attack.uuid,
+                name: attack.name,
+                bonus: signed(attack.roll?.bonus),
+                range: t(CONFIG.DH.GENERAL.range?.[attack.range]?.label ?? "") || "–",
+                damage: attackDamage(attack)
+            };
+        }
         const crit = Number(system.criticalThreshold);
-        stats.append(statblockRow([
-            statblockEntry(t("DAGGERHEART.ACTORS.Adversary.Embed.attack"), signed(attack.roll?.bonus)),
-            statblockEntry(attack.name, range || "–"),
-            damage ? statblockEntry(null, damage) : null,
-            crit && crit < 20 ? statblockEntry(t("DAGGERHEART.GENERAL.criticalShort"), `${crit}+`) : null
-        ], "attack"));
+        if (crit && crit < 20) sb.crit = `${crit}+`;
+        sb.experiences = Object.entries(system.experiences ?? {}).map(([id, exp], i, all) => ({
+            id, name: exp.name, value: signed(exp.value), description: exp.description, last: i === all.length - 1
+        }));
+    } else {
+        const type = system.type ? t(`DAGGERHEART.CONFIG.EnvironmentType.${system.type}.label`) : "";
+        sb.tierLine = game.i18n.format("DAGGERHEART.GENERAL.Tiers.typed", { tier: system.tier, type }).trim();
+        sb.difficulty = system.difficulty || t("DAGGERHEART.ACTORS.Environment.Embed.special");
+        sb.adversaryGroups = Object.values(system._source?.potentialAdversaries ?? {}).map((group, i, all) => ({
+            label: group.label,
+            last: i === all.length - 1,
+            adversaries: (group.adversaries ?? []).map((uuid, j, list) => ({
+                uuid, name: fromUuidSync(uuid, { strict: false })?.name ?? "?", last: j === list.length - 1
+            }))
+        }));
     }
 
-    const experiences = Object.entries(system.experiences ?? {});
-    if (experiences.length) {
-        const list = statblockEl("span", "cosmo-sb-experiences");
-        experiences.forEach(([id, exp], i) => {
-            if (i) list.append(", ");
-            // Same action as the sidebar's chat button, handled by the system sheet.
-            const link = statblockEl("a", "cosmo-sb-experience", `${exp.name} ${signed(exp.value)}`);
-            link.dataset.action = "sendExpToChat";
-            link.dataset.id = id;
-            if (exp.description) link.dataset.tooltipText = exp.description;
-            list.append(link);
-        });
-        stats.append(statblockRow([statblockEntry(t("DAGGERHEART.GENERAL.Experience.plural"), list)], "experiences"));
+    const featureForm = feature => feature.system?.featureForm
+        ? t(`DAGGERHEART.CONFIG.FeatureForm.${feature.system.featureForm}`) : "";
+    const decorate = feature => ({
+        item: feature,
+        form: featureForm(feature),
+        inactive: !!feature.system?.inactive,
+        usable: !!feature.usable && !feature.system?.inactive && context.editable,
+        usesActions: [...(feature.system?.actions ?? [])].filter(action => action.uses?.max)
+    });
+    sb.features = (context.features ?? []).map(decorate);
+    sb.evolutionFeatures = (context.evolutionFeatures ?? []).map(decorate);
+    context.sb = sb;
+    return context;
+}
+
+// Shared overrides for both statblock sheets.
+function StatblockMixin(Base, { tabs, width, height }) {
+    return class extends Base {
+        static DEFAULT_OPTIONS = {
+            classes: ["cosmo-statblock-sheet"],
+            position: { width, height },
+            actions: {
+                openStatblockActor: async function (_event, target) {
+                    const actor = await fromUuid(target.dataset.uuid);
+                    actor?.sheet?.render({ force: true });
+                }
+            }
+        };
+
+        static TABS = {
+            primary: { tabs, initial: "statblock", labelPrefix: "DAGGERHEART.GENERAL.Tabs" }
+        };
+
+        // The system's per-type classes lay the sheet out as a sidebar grid; this sheet has its own layout.
+        _initializeApplicationOptions(options) {
+            const applicationOptions = super._initializeApplicationOptions(options);
+            const limited = applicationOptions.document.testUserPermission(game.user, "LIMITED", { exact: true });
+            if (!limited) {
+                applicationOptions.classes = applicationOptions.classes.filter(c => !["adversary", "environment"].includes(c));
+            }
+            return applicationOptions;
+        }
+
+        async _prepareContext(options) {
+            const context = await super._prepareContext(options);
+            context.tabs ??= this._prepareTabs("primary");
+            return context;
+        }
+
+        async _preparePartContext(partId, context, options) {
+            context = await super._preparePartContext(partId, context, options);
+            if (partId === "statblock") {
+                await this._prepareHeaderContext(context, options);
+                await this._prepareFeaturesContext(context, options);
+                statblockContext(this, context);
+            }
+            return context;
+        }
+    };
+}
+
+Hooks.once("setup", () => {
+    const sheets = game.system.api?.applications?.sheets?.actors;
+    if (!sheets?.Adversary || !sheets?.Environment) return;
+    const makeDefault = game.settings.get(MODULE_ID, "statblockSheets");
+    const T = STATBLOCK_TEMPLATES;
+    const label = `${SB}.SheetLabel`;
+
+    class CosmoStatblockAdversarySheet extends StatblockMixin(sheets.Adversary, {
+        width: 560, height: 720,
+        tabs: [{ id: "statblock", label: `${SB}.Tab` }, { id: "effects" }, { id: "notes" }]
+    }) {
+        static PARTS = {
+            limited: sheets.Adversary.PARTS.limited,
+            nav: { template: `${T}/nav.hbs` },
+            statblock: { template: `${T}/adversary.hbs`, scrollable: [""] },
+            effects: sheets.Adversary.PARTS.effects,
+            notes: sheets.Adversary.PARTS.notes
+        };
     }
-    return stats;
-}
 
-function environmentStats(actor) {
-    const system = actor.system;
-    const t = key => game.i18n.localize(key);
-    const stats = statblockEl("section", "cosmo-sb-stats");
-    stats.append(statblockRow([
-        statblockEntry(t("DAGGERHEART.GENERAL.difficulty"), system.difficulty || t("DAGGERHEART.ACTORS.Environment.Embed.special"))
-    ]));
-    const groups = Object.values(system._source?.potentialAdversaries ?? {}).map(group => {
-        const names = (group.adversaries ?? [])
-            .map(uuid => fromUuidSync(uuid, { strict: false })?.name)
-            .filter(Boolean);
-        return names.length ? `${group.label} (${names.join(", ")})` : group.label;
-    }).filter(Boolean);
-    stats.append(statblockRow([
-        statblockEntry(t("DAGGERHEART.ACTORS.Environment.Embed.potentialAdversaries"),
-            groups.join(", ") || t("DAGGERHEART.ACTORS.Environment.Embed.any"))
-    ], "adversaries"));
-    return stats;
-}
+    class CosmoStatblockEnvironmentSheet extends StatblockMixin(sheets.Environment, {
+        width: 520, height: 680,
+        tabs: [{ id: "statblock", label: `${SB}.Tab` }, { id: "potentialAdversaries" }, { id: "notes" }]
+    }) {
+        static PARTS = {
+            limited: sheets.Environment.PARTS.limited,
+            nav: { template: `${T}/nav.hbs` },
+            statblock: { template: `${T}/environment.hbs`, scrollable: [""] },
+            potentialAdversaries: sheets.Environment.PARTS.potentialAdversaries,
+            notes: sheets.Environment.PARTS.notes
+        };
+    }
 
-Hooks.on("renderActorSheetV2", (app, element) => {
-    const root = app.element ?? element;
-    const actor = app.document;
-    if (!root || !STATBLOCK_TYPES.has(actor?.type)) return;
-
-    root.querySelectorAll(".cosmo-sb-stats, .cosmo-sb-features-heading").forEach(el => el.remove());
-    const enabled = game.settings.get(MODULE_ID, "statblockSheets");
-    root.classList.toggle("cosmo-statblock", enabled);
-    if (!enabled) return;
-
-    // Limited sheets show no header or features.
-    const info = root.querySelector(".adversary-header-sheet .adversary-info, .environment-header-sheet .environment-info");
-    if (info) info.after(actor.type === "adversary" ? adversaryStats(actor) : environmentStats(actor));
-
-    const features = root.querySelector(".tab.features .feature-section");
-    if (features) features.before(statblockEl("h2", "cosmo-sb-features-heading", game.i18n.localize("DAGGERHEART.GENERAL.features")));
+    const { DocumentSheetConfig } = foundry.applications.apps;
+    DocumentSheetConfig.registerSheet(Actor, MODULE_ID, CosmoStatblockAdversarySheet, { types: ["adversary"], makeDefault, label });
+    DocumentSheetConfig.registerSheet(Actor, MODULE_ID, CosmoStatblockEnvironmentSheet, { types: ["environment"], makeDefault, label });
 });
 
 /* -------------------------------------------- */

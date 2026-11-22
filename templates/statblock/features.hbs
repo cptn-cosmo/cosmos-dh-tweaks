@@ -1,0 +1,30 @@
+{{#*inline "cosmo-sb-feature"}}
+<li class="inventory-item cosmo-sb-feature{{#if inactive}} inactive{{/if}}" data-item-id="{{item.id}}" data-item-uuid="{{item.uuid}}"
+    data-type="feature" data-item-type="{{item.type}}" {{#if inactive}}data-disabled="true"{{/if}}>
+    <span class="cosmo-sb-feature-head{{#if item.hasDescription}} toggle{{/if}}" {{#if item.hasDescription}}data-action="toggleExtended"{{/if}}>
+        <strong class="cosmo-sb-feature-name">{{item.name}}{{#if form}} - {{form}}{{/if}}:</strong>
+    </span>
+    {{#if usable}}
+        <a class="cosmo-sb-use" data-action="useItem" data-tooltip="DAGGERHEART.GENERAL.use"><i class="fa-solid fa-dice-d20"></i></a>
+    {{/if}}
+    {{#each usesActions as |action|}}
+        <span class="item-button cosmo-sb-uses"><button type="button" class="action-uses-button" data-action="increaseActionUses"
+            data-item-uuid="{{action.uuid}}" data-tooltip-text="{{action.name}}">{{action.remainingUses}}/{{action.uses.max}}</button></span>
+    {{/each}}
+    {{#if item.system.resource}}
+        <span class="cosmo-sb-resource">{{> "systems/daggerheart/templates/sheets/global/partials/item-resource.hbs" item=item}}</span>
+    {{/if}}
+    <div class="inventory-item-content extensible"><div class="inventory-description"></div></div>
+</li>
+{{/inline}}
+<section class="cosmo-sb-features">
+    <h2 class="cosmo-sb-features-heading">{{localize "DAGGERHEART.GENERAL.features"}}</h2>
+    <ul class="cosmo-sb-feature-list">
+        {{#each features}}{{> cosmo-sb-feature}}{{/each}}
+    </ul>
+    {{#if evolution.length}}
+        <ul class="cosmo-sb-feature-list evolution">
+            {{#each evolution}}{{> cosmo-sb-feature}}{{/each}}
+        </ul>
+    {{/if}}
+</section>

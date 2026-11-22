@@ -1,0 +1,68 @@
+<section class="tab cosmo-sb-page {{tabs.statblock.cssClass}}" data-tab="statblock" data-group="primary">
+    <div class="cosmo-sb-card">
+        {{> cosmo-sb-header}}
+        <section class="cosmo-sb-stats">
+            <div class="cosmo-sb-row">
+                <span><strong>{{localize "DAGGERHEART.GENERAL.difficulty"}}:</strong> {{ifThen source.system.difficulty source.system.difficulty "–"}}</span>
+                <span class="cosmo-sb-divider"></span>
+                <span><strong>{{localize "DAGGERHEART.ACTORS.Adversary.Embed.thresholds"}}:</strong> {{sb.thresholds}}</span>
+                <span class="cosmo-sb-divider"></span>
+                <span><strong>{{localize "DAGGERHEART.GENERAL.HitPoints.short"}}:</strong> {{sb.hp.max}}</span>
+                <span class="cosmo-sb-divider"></span>
+                <span><strong>{{localize "DAGGERHEART.GENERAL.stress"}}:</strong> {{sb.stress.max}}</span>
+            </div>
+            {{#if sb.attack}}
+                <div class="cosmo-sb-row cosmo-sb-attack" data-item-uuid="{{sb.attack.uuid}}" data-type="attack">
+                    <span><strong>{{localize "DAGGERHEART.ACTORS.Adversary.Embed.attack"}}:</strong> {{sb.attack.bonus}}</span>
+                    <span class="cosmo-sb-divider"></span>
+                    <span>
+                        {{#if editable}}
+                            <a class="cosmo-sb-roll" data-action="useItem" data-tooltip="DAGGERHEART.CONFIG.RollTypes.attack.name"><strong>{{sb.attack.name}}:</strong></a>
+                        {{else}}
+                            <strong>{{sb.attack.name}}:</strong>
+                        {{/if}}
+                        {{sb.attack.range}}
+                    </span>
+                    {{#if sb.attack.damage}}
+                        <span class="cosmo-sb-divider"></span>
+                        <span>{{sb.attack.damage}}</span>
+                    {{/if}}
+                    {{#if sb.crit}}
+                        <span class="cosmo-sb-divider"></span>
+                        <span><strong>{{localize "DAGGERHEART.GENERAL.criticalShort"}}:</strong> {{sb.crit}}</span>
+                    {{/if}}
+                </div>
+            {{/if}}
+            {{#if sb.experiences.length}}
+                <div class="cosmo-sb-row cosmo-sb-experiences">
+                    <strong>{{localize "DAGGERHEART.GENERAL.Experience.plural"}}:</strong>
+                    {{#each sb.experiences as |exp|}}
+                        <a class="cosmo-sb-experience" data-action="sendExpToChat" data-id="{{exp.id}}"
+                           {{#if exp.description}}data-tooltip-text="{{exp.description}}"{{/if}}>{{exp.name}} {{exp.value}}</a>{{#unless exp.last}},{{/unless}}
+                    {{/each}}
+                </div>
+            {{/if}}
+        </section>
+        <section class="cosmo-sb-trackers">
+            <div class="cosmo-sb-tracker">
+                <span class="cosmo-sb-tracker-label">{{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                <span class="cosmo-sb-pips">
+                    {{#each sb.hp.pips as |pip|}}
+                        <a class="cosmo-sb-pip{{#if pip.filled}} filled{{/if}}" {{#if @root.editable}}data-action="toggleHitPoints"{{/if}} data-value="{{pip.value}}"></a>
+                    {{/each}}
+                </span>
+                <span class="cosmo-sb-tracker-count">{{sb.hp.value}}/{{sb.hp.max}}</span>
+            </div>
+            <div class="cosmo-sb-tracker">
+                <span class="cosmo-sb-tracker-label">{{localize "DAGGERHEART.GENERAL.stress"}}</span>
+                <span class="cosmo-sb-pips">
+                    {{#each sb.stress.pips as |pip|}}
+                        <a class="cosmo-sb-pip stress{{#if pip.filled}} filled{{/if}}" {{#if @root.editable}}data-action="toggleStress"{{/if}} data-value="{{pip.value}}"></a>
+                    {{/each}}
+                </span>
+                <span class="cosmo-sb-tracker-count">{{sb.stress.value}}/{{sb.stress.max}}</span>
+            </div>
+        </section>
+        {{> cosmo-sb-features features=sb.features evolution=sb.evolutionFeatures}}
+    </div>
+</section>
