@@ -199,7 +199,10 @@
     /* light-dark() pairs: the system embed's light and dark statblock colors */
     --cosmo-sb-bg: light-dark(#f4f0e7, #0f0f14);
     --cosmo-sb-stats-bg: light-dark(#ffffff, #000000);
-    --cosmo-sb-text: light-dark(#000000, #efe6d8);
+    --cosmo-sb-text: light-dark(#000000, #f5efe6);
+    /* Running text. In dark, light-on-dark text looks heavier, so it is a little softer than names and labels
+       to keep the same contrast between them as in light. */
+    --cosmo-sb-body: light-dark(#000000, #c4bbad);
     --cosmo-sb-subtle: light-dark(#6b6252, #a59d8f);
     --cosmo-sb-border: light-dark(#ddd0b9, #efe6d880);
     --cosmo-sb-hover: light-dark(#ebe4d5, #1d1c25);
@@ -247,7 +250,7 @@
         padding: 0;
         overflow: hidden;
         background: var(--cosmo-sb-bg);
-        color: var(--cosmo-sb-text);
+        color: var(--cosmo-sb-body);
         font-family: var(--cosmo-sb-font);
         font-size: 15px;
         line-height: 1.2;
@@ -361,6 +364,13 @@
         }
 
         .cosmo-sb-motives p { display: inline; margin: 0; }
+    }
+
+    /* Names, labels and bold text stay at full brightness */
+    .cosmo-sb-page :is(strong, b, h1, h2, .cosmo-sb-tier, .cosmo-sb-feature-name),
+    .cosmo-sb-nav .cosmo-sb-tab.active,
+    .cosmo-sb-footer .cosmo-sb-tracker-label {
+        color: var(--cosmo-sb-text);
     }
 
     /* Secrets carry flavor text and GM questions; shown plain and italic, as in the book. */
@@ -543,7 +553,7 @@
                 display: inline;
                 overflow: visible;
                 font: inherit;
-                color: var(--cosmo-sb-text);
+                color: var(--cosmo-sb-body);
 
                 p { margin: 0.25em 0 0; }
                 > p:first-child { display: inline; margin: 0; }
@@ -597,4 +607,11 @@
         }
 
     }
+}
+
+/* Dark statblock: thinner text rendering where the platform supports it (light text on dark looks heavier). */
+.application.sheet.daggerheart.actor.dh-style.cosmo-statblock-sheet.theme-dark,
+body.theme-dark .application.sheet.daggerheart.actor.dh-style.cosmo-statblock-sheet:not(.theme-light) {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
