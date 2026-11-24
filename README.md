@@ -42,19 +42,19 @@ Switch to the sheet themes and token rings that ship with the Daggerheart Core R
 Replaces Foundry's spinning pause icon with the static Daggerheart emblem from the system, and stops the "Game Paused" banner from pulsing.
 * **No bundled artwork**: This module does not ship the Daggerheart logo or any other artwork. It only points the pause icon at the emblem the installed Daggerheart system already provides (`systems/daggerheart/assets/logos/DaggerheartLogo.webp`). Likewise, the sheet themes and token rings in feature 5 are the ones the `daggerheart-core` module provides.
 
-### 7. Statblock Sheets (Off by default)
+### 7. Statblock Sheets
 A replacement sheet for adversaries and environments that looks like the statblocks in the rulebook, using the same fonts, sizes and colors as the system's statblock embeds. It comes in a light (book) and a dark version: it follows the theme picked in *Configure Sheet*, or Foundry's interface theme when none is picked.
 * **The statblock**: Uppercase name, the italic "Tier 3 Solo" line with its source, the description, Motives & Tactics (or Impulses), and the stat box with Difficulty, Thresholds, HP and Stress, the attack (`ATK: +3 | Claws: Melee | 2d10+4 phy`) and Experiences. Environments show Difficulty and Potential Adversaries. No portrait, no extra boxes.
 * **Features as in the book**: A FEATURES heading with features written as *Name - Passive:* and their text running on after it. Click a name to collapse or expand it. The system's settings for showing descriptions expanded by default still apply.
 * **Still playable**: A slim tab bar above the statblock (Effects, Notes, Potential Adversaries, Reaction Roll, sheet settings) and HP/Stress boxes below it. Features with actions get a line of text buttons under them to use each action, with the action's uses counter attached (click to use one, right-click to give one back). Click the attack name to roll it (right-click for damage and chat), right-click a feature to use, edit or delete it, and click an experience to post it to chat. Feature resources show next to the feature name.
-* **Choosing it**: The setting makes it the default sheet for every adversary and environment (requires a reload). When the setting is off, you can still pick *Statblock (Cosmo's Tweaks)* for a single actor via *Configure Sheet*.
+* **Choosing it**: Pick *Statblock (Cosmo's Tweaks)* for a single actor via *Configure Sheet*, or make it the default for every adversary and environment in Foundry's *Sheet Settings* (Configure Settings > Core).
 
 ## Configuration
 
 The GM opens **Configure Settings** > **Cosmo's Daggerheart Tweaks** > **Open Settings**. Every option applies to the whole world (GMs and players alike). The settings window has a tab per area:
 * **Fear Tracker**: color gradient, icon, token shape, and the max-fear glow.
 * **Spotlight**: Token HUD spotlight button and the GM's request indicator.
-* **Sheets & Tokens**: Statblock Sheets, plus the Daggerheart Core Rulebook sheet theme and token ring (only shown when `daggerheart-core` is active).
+* **Sheets & Tokens**: The Daggerheart Core Rulebook sheet theme and token ring (only shown when `daggerheart-core` is active).
 * **Interface**: Minimal Countdown UI and the Daggerheart pause icon.
 
 Custom color and icon fields only appear when *Custom* is selected.

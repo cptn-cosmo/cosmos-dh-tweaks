@@ -659,21 +659,12 @@ Hooks.once("init", () => {
 // Replacement adversary and environment sheets laid out like the rulebook statblocks. They extend the system's own
 // sheets, so all of the system's actions keep working: HP/Stress marking, attack and reaction rolls, feature use,
 // context menus, resources, and feature descriptions that collapse and follow the system's expand-by-default
-// settings. Registered for every world (pick it per actor via Configure Sheet); the setting makes it the default.
+// settings. Registered for every world; pick it per actor or as the default via Configure Sheet / Sheet Settings.
 
 const STATBLOCK_TEMPLATES = `modules/${MODULE_ID}/templates/statblock`;
 const SB = "COSMOS_DH_TWEAKS.Statblock";
 
 Hooks.once("init", () => {
-    game.settings.register(MODULE_ID, "statblockSheets", {
-        name: "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Name",
-        hint: "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Hint",
-        scope: "world",
-        config: false,
-        type: Boolean,
-        default: false,
-        requiresReload: true
-    });
     foundry.applications.handlebars.loadTemplates({
         "cosmo-sb-features": `${STATBLOCK_TEMPLATES}/features.hbs`,
         "cosmo-sb-header": `${STATBLOCK_TEMPLATES}/header.hbs`
@@ -822,7 +813,6 @@ function StatblockMixin(Base, { tabs, width, height }) {
 Hooks.once("setup", () => {
     const sheets = game.system.api?.applications?.sheets?.actors;
     if (!sheets?.Adversary || !sheets?.Environment) return;
-    const makeDefault = game.settings.get(MODULE_ID, "statblockSheets");
     const T = STATBLOCK_TEMPLATES;
     const label = `${SB}.SheetLabel`;
 
@@ -854,8 +844,8 @@ Hooks.once("setup", () => {
     }
 
     const { DocumentSheetConfig } = foundry.applications.apps;
-    DocumentSheetConfig.registerSheet(Actor, MODULE_ID, CosmoStatblockAdversarySheet, { types: ["adversary"], makeDefault, label });
-    DocumentSheetConfig.registerSheet(Actor, MODULE_ID, CosmoStatblockEnvironmentSheet, { types: ["environment"], makeDefault, label });
+    DocumentSheetConfig.registerSheet(Actor, MODULE_ID, CosmoStatblockAdversarySheet, { types: ["adversary"], label });
+    DocumentSheetConfig.registerSheet(Actor, MODULE_ID, CosmoStatblockEnvironmentSheet, { types: ["environment"], label });
 });
 
 /* -------------------------------------------- */
@@ -881,7 +871,6 @@ const SETTINGS_LAYOUT = [
     },
     {
         id: "themes", icon: "fa-solid fa-palette", sections: [
-            { id: "statblock", rows: [["statblockSheets"]] },
             { id: "dhCore", rows: [["dhCoreSheetTheme"], ["dhCoreTokenRing"]] }
         ]
     },

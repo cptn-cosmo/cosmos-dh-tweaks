@@ -61,8 +61,6 @@
   "COSMOS_DH_TWEAKS.Settings.DhCoreTokenRing.Name": "Daggerheart Core Token Ring",
   "COSMOS_DH_TWEAKS.Settings.DhCoreTokenRing.Hint": "Dynamic token ring style for the whole world, from the Daggerheart Core Rulebook module. Same as the \"Dynamic Token Ring\" core setting, limited to the Daggerheart rings.",
   "COSMOS_DH_TWEAKS.Settings.DhCoreTokenRing.Other": "— Other (set in Core settings) —",
-  "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Name": "Use Statblock Sheets by Default",
-  "COSMOS_DH_TWEAKS.Settings.StatblockSheets.Hint": "Make the Statblock sheet the default for adversaries and environments. It is laid out like the rulebook statblocks, and you can still mark HP and Stress, roll attacks and reaction rolls, and use features. Features collapse and follow the system's expand-by-default settings. When this is off, the sheet can still be picked per actor via Configure Sheet. Requires a reload.",
   "COSMOS_DH_TWEAKS.Statblock.SheetLabel": "Statblock (Cosmo's Tweaks)",
   "COSMOS_DH_TWEAKS.Statblock.Tab": "Statblock",
   "COSMOS_DH_TWEAKS.Settings.DaggerheartPauseIcon.Name": "Daggerheart Pause Icon",
@@ -81,7 +79,6 @@
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.fear.icon": "Icon & Shape",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.fear.effects": "Effects",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.spotlight.hud": "Spotlight Management",
-  "COSMOS_DH_TWEAKS.SettingsWindow.Sections.themes.statblock": "Adversaries & Environments",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.themes.dhCore": "Daggerheart Core Rulebook",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.interface.widgets": "Interface",
   "COSMOS_DH_TWEAKS.Settings.DhCoreSheetTheme.Unchanged": "— Don't change —"
