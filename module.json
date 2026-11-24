@@ -24,7 +24,8 @@
     ]
   },
   "esmodules": [
-    "scripts/cosmos-dh-tweaks.mjs"
+    "scripts/cosmos-dh-tweaks.mjs",
+    "scripts/colossus-link.mjs"
   ],
   "styles": [
     "styles/cosmos-dh-tweaks.css"

@@ -871,6 +871,7 @@ const SETTINGS_LAYOUT = [
     },
     {
         id: "themes", icon: "fa-solid fa-palette", sections: [
+            { id: "colossus", rows: [["colossusLink"], ["colossusSnapDistance"]] },
             { id: "dhCore", rows: [["dhCoreSheetTheme"], ["dhCoreTokenRing"]] }
         ]
     },

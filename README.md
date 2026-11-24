@@ -49,12 +49,19 @@ A replacement sheet for adversaries and environments that looks like the statblo
 * **Still playable**: A slim tab bar above the statblock (Effects, Notes, Potential Adversaries, Reaction Roll, sheet settings) and HP/Stress boxes below it. Features with actions get a line of text buttons under them to use each action, with the action's uses counter attached (click to use one, right-click to give one back). Click the attack name to roll it (right-click for damage and chat), right-click a feature to use, edit or delete it, and click an experience to post it to chat. Feature resources show next to the feature name.
 * **Choosing it**: Pick *Statblock (Cosmo's Tweaks)* for a single actor via *Configure Sheet*, or make it the default for every adversary and environment in Foundry's *Sheet Settings* (Configure Settings > Core).
 
+### 8. Colossus Token Linking (Off by default)
+Keeps the framework and part tokens of a colossus adversary together on the canvas:
+* **Rearrange freely**: If the tokens still touch (edges or corners) after a move, only the moved token moves.
+* **Snapping**: A token dropped within *Colossus Snap Distance* grid spaces of the rest (default 1; on gridless scenes, one space is the scene's grid size) slides flush against the colossus once it lands, preferring a spot that reconnects the whole colossus.
+* **Move together**: Drag a token further away and the rest of the colossus follows along the same path, keeping its formation. Followers ignore walls so the formation doesn't break.
+* To move the colossus a short distance, select all of its tokens and move them together.
+
 ## Configuration
 
 The GM opens **Configure Settings** > **Cosmo's Daggerheart Tweaks** > **Open Settings**. Every option applies to the whole world (GMs and players alike). The settings window has a tab per area:
 * **Fear Tracker**: color gradient, icon, token shape, and the max-fear glow.
 * **Spotlight**: Token HUD spotlight button and the GM's request indicator.
-* **Sheets & Tokens**: The Daggerheart Core Rulebook sheet theme and token ring (only shown when `daggerheart-core` is active).
+* **Sheets & Tokens**: Colossus token linking, plus the Daggerheart Core Rulebook sheet theme and token ring (only shown when `daggerheart-core` is active).
 * **Interface**: Minimal Countdown UI and the Daggerheart pause icon.
 
 Custom color and icon fields only appear when *Custom* is selected.
