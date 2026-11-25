@@ -2,7 +2,7 @@
   "id": "cosmos-dh-tweaks",
   "title": "Cosmo's Daggerheart Tweaks",
   "description": "A selection of quality of life tweaks for the Daggerheart system on Foundry VTT.",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "url": "https://github.com/cptn-cosmo/cosmos-dh-tweaks",
   "manifest": "https://github.com/cptn-cosmo/cosmos-dh-tweaks/releases/latest/download/module.json",
   "download": "https://github.com/cptn-cosmo/cosmos-dh-tweaks/releases/download/v2.0.0/cosmos-dh-tweaks.zip",
