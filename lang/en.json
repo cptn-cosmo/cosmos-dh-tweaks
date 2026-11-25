@@ -71,10 +71,6 @@
   "COSMOS_DH_TWEAKS.SettingsWindow.MenuHint": "GM only: configure the Fear Tracker, Spotlight, sheet and token themes, and interface tweaks for everyone in the world.",
   "COSMOS_DH_TWEAKS.SettingsWindow.Save": "Save Changes",
   "COSMOS_DH_TWEAKS.SettingsWindow.Reset": "Reset Defaults",
-  "COSMOS_DH_TWEAKS.Settings.ColossusLink.Name": "Link Colossus Tokens",
-  "COSMOS_DH_TWEAKS.Settings.ColossusLink.Hint": "Keep the framework and part tokens of a colossus together. Tokens can be rearranged as long as they keep touching; dragging one far enough away moves the whole colossus.",
-  "COSMOS_DH_TWEAKS.Settings.ColossusSnapDistance.Name": "Colossus Snap Distance",
-  "COSMOS_DH_TWEAKS.Settings.ColossusSnapDistance.Hint": "A colossus token dropped this many grid spaces or fewer away from the rest slides into contact instead of moving the whole colossus. On gridless scenes, one space is the scene's grid size. 0 disables snapping.",
   "COSMOS_DH_TWEAKS.SettingsWindow.Tabs.fear": "Fear Tracker",
   "COSMOS_DH_TWEAKS.SettingsWindow.Tabs.spotlight": "Spotlight",
   "COSMOS_DH_TWEAKS.SettingsWindow.Tabs.themes": "Sheets & Tokens",
@@ -83,7 +79,6 @@
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.fear.icon": "Icon & Shape",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.fear.effects": "Effects",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.spotlight.hud": "Spotlight Management",
-  "COSMOS_DH_TWEAKS.SettingsWindow.Sections.themes.colossus": "Colossus Tokens",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.themes.dhCore": "Daggerheart Core Rulebook",
   "COSMOS_DH_TWEAKS.SettingsWindow.Sections.interface.widgets": "Interface",
   "COSMOS_DH_TWEAKS.Settings.DhCoreSheetTheme.Unchanged": "— Don't change —"
